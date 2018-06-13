@@ -1,6 +1,6 @@
 public class Variable {
 
-    String name;
-    boolean isFinal;
-    boolean
+    private String name;
+    private boolean isFinal;
+    private boolean initialized;
 }
