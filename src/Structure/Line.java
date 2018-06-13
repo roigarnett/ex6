@@ -1,3 +1,5 @@
+package Structure;
+
 public class Line {
 
     private String content;

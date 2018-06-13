@@ -1,3 +1,5 @@
+package Structure;
+
 public class Variable {
 
     private String name;

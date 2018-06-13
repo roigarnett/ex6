@@ -1,3 +1,5 @@
+package Structure;
+
 import java.util.*;
 
 public class MethodScope extends Scope {
