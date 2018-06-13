@@ -6,4 +6,5 @@ public class Scope {
     ArrayList<Variable> variables;
     Scope father;
 
+
 }
