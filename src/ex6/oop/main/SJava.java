@@ -52,7 +52,7 @@ public class SJava {
         for(String line : data){
             Matcher m = r.matcher(line);
             if(m.find()){
-                parsedData.add(line.split(pattern)[1]);
+                parsedData.add(m.group(0));
             }
             else{
                 throw new Exception();
