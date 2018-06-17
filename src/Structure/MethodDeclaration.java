@@ -22,4 +22,13 @@ public class MethodDeclaration {
     public ArrayList<Variable> getMethodVariables() {
         return methodVariables;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder declareString = new StringBuilder(name);
+        for(Variable var: methodVariables) {
+            declareString.append(" " + var.toString());
+        }
+        return declareString.toString();
+    }
 }

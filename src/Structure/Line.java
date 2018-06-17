@@ -50,7 +50,7 @@ public class Line {
 
     public String toString (){
         if (scope!=null)
-            return("line: " + number + " content is: " + content + " in scope: " + scope
+            return("line: " + number + " content is: " + content + " defines scope: " + scope
                     .getLines().get(0).getNumber() + "-" + scope.getLines().get(scope.getLines().size()-1)
                     .getNumber());
         else

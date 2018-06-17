@@ -40,11 +40,11 @@ public class Scope {
      * @return the scope's lines (for debugging).
      */
     public String toString(){
-        String scopeString = "Scope lines are: ";
+        StringBuilder scopeString = new StringBuilder("Scope lines are:");
         for (Line line: lines){
-            scopeString += line.getNumber();
+            scopeString.append(" " + line.getNumber());
         }
-        return scopeString;
+        return scopeString.toString();
     }
 
     /**
@@ -52,8 +52,8 @@ public class Scope {
      */
     public void printScopeVariables() {
         System.out.print("Scope vars are: ");
-        for (int i=0; i<variables.size(); i++){
-            System.out.print(variables.get(i).toString());
+        for (int i=0; i<getVariables().size(); i++){
+            System.out.print(getVariables().get(i).toString());
         }
     }
 }

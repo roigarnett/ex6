@@ -23,4 +23,13 @@ public class ClassScope extends Scope{
             methodDeclarations.add(methodDeclaration);
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder SJavaString = new StringBuilder(super.toString() + " methods declared are: ");
+        for (MethodDeclaration m: methodDeclarations) {
+            SJavaString.append(" " + m.toString());
+        }
+        return SJavaString.toString();
+    }
 }
