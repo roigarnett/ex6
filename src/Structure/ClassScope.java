@@ -15,7 +15,7 @@ public class ClassScope extends Scope{
      * Add a new method call.
      * @param methodDeclaration the new method call.
      */
-    public void addMethodCall(MethodDeclaration methodDeclaration){
+    public void addMethodDeclaration(MethodDeclaration methodDeclaration){
         if(methodDeclarations.contains(methodDeclaration)){
             System.out.println("method already exist");
         }

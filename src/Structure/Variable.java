@@ -48,4 +48,16 @@ public class Variable {
     public void initialize() {
         this.initialized = true;
     }
+
+    @Override
+    public String toString() {
+        String varString = type.toString() + " " + name;
+        if (isFinal){
+            varString = "final " + varString;
+        }
+        if (isInitialized()) {
+            varString = varString + "initialized";
+        }
+        return varString;
+    }
 }

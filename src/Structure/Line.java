@@ -47,4 +47,13 @@ public class Line {
     public void setScope (Scope newScope) {
         this.scope = newScope;
     }
+
+    public String toString (){
+        if (scope!=null)
+            return("line: " + number + " content is: " + content + " in scope: " + scope
+                    .getLines().get(0).getNumber() + "-" + scope.getLines().get(scope.getLines().size()-1)
+                    .getNumber());
+        else
+            return("line: " + number + " content is: " + content);
+    }
 }

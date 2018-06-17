@@ -14,7 +14,7 @@ public class MethodScope extends Scope {
      */
     public MethodScope(Scope father){
         super(father);
-        methodScopeVariables = new ArrayList<>();
+        methodScopeVariables = new ArrayList<Variable>();
     }
 
     /**
@@ -25,12 +25,20 @@ public class MethodScope extends Scope {
     }
 
     /**
+     * Adds a new variable to the method scope.
+     * @param newVariable the new variable to add.
+     */
+    public void addVariable(Variable newVariable) {
+        methodScopeVariables.add(newVariable);
+    }
+
+    /**
      * Updates all the method variables by the arguments given in the declaration to the method and the class
      * scope's variables.
      * @param methodDeclaration the call to the method.
      */
     public void updateVariables(MethodDeclaration methodDeclaration){
-        methodScopeVariables = new ArrayList<>(father.getVariables());
+        methodScopeVariables = new ArrayList<Variable>(father.getVariables());
         methodScopeVariables.addAll(methodDeclaration.getMethodVariables());
 
     }
