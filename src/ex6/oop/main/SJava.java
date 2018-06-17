@@ -1,4 +1,6 @@
 package ex6.oop.main;
+import Structure.ClassScope;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.*;
@@ -7,6 +9,8 @@ import java.util.regex.Pattern;
 import java.io.File;
 
 public class SJava {
+
+    private ClassScope ClassScope = new ClassScope();
 
     public static void main(String [] args){
         try{
@@ -61,5 +65,8 @@ public class SJava {
         return parsedData;
     }
 
+    public ClassScope getClassScope(){
+        return ClassScope;
+    }
 
 }

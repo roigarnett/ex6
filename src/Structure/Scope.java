@@ -6,7 +6,7 @@ public class Scope {
 
     private ArrayList<Line> lines;
     private ArrayList<Variable> variables;
-    private Scope father;
+    Scope father;
 
     public Scope(){
         this.lines = new ArrayList<Line>();
