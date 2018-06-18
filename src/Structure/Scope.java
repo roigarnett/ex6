@@ -2,10 +2,14 @@ package Structure;
 
 import java.util.*;
 
+/**
+ * A class representing a scope which has certain variables and lines.
+ */
 public class Scope {
 
     private ArrayList<Line> lines;
     private ArrayList<Variable> variables;
+    /*The scope that contains this scope. null if no scope contains it.*/
     Scope father;
 
     public Scope(){

@@ -1,5 +1,8 @@
 package Structure;
 
+/**
+ * A class describing a simple java variable.
+ */
 public class Variable {
 
     private VariableTypes type;
@@ -28,7 +31,6 @@ public class Variable {
      * @param name
      * @param isFinal
      */
-
     public Variable(VariableTypes type, String name, boolean isFinal) {
         this.type = type;
         this.name = name;
@@ -36,7 +38,7 @@ public class Variable {
     }
 
     /**
-     * @return true iff the varible is initialized or not.
+     * @return true iff the variable is initialized.
      */
     public boolean isInitialized() {
         return initialized;
@@ -56,7 +58,7 @@ public class Variable {
             varString = "final " + varString;
         }
         if (isInitialized()) {
-            varString = varString + "initialized";
+            varString = varString + " initialized";
         }
         return varString;
     }
