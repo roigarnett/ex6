@@ -1,5 +1,6 @@
 package ex6.oop.main;
-import Structure.ClassScope;
+import Structure.Scope;
+import Parsing.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,17 +11,13 @@ import java.io.File;
 
 public class SJava {
 
-    private ClassScope ClassScope = new ClassScope();
-
     public static void main(String [] args){
         try{
             File sourceFile = new File(args[0]);
             ArrayList<String> data = extractData(sourceFile);
             removeEmptyLines(data);
-            data = basicParsing(data);
-            for(String line : data){
-                System.out.println(line);
-            }
+            Scope scope = ScopeFactory.createClassScope(data);
+            System.out.println(scope);
         }
         catch (Exception exception){
             System.err.println(exception.getMessage());
@@ -49,24 +46,15 @@ public class SJava {
         }
     }
 
-    private static ArrayList<String> basicParsing(ArrayList<String> data) throws Exception{
+    private static ArrayList<String> removeComments(ArrayList<String> data) throws Exception{
         ArrayList<String> parsedData = new ArrayList<String>();
-        String pattern = "\\s*+//+\\.*";
-        Pattern r = Pattern.compile(pattern);
         for(String line : data){
-            Matcher m = r.matcher(line);
-            if(m.find()){
-                parsedData.add(m.group(0));
-            }
-            else{
-                throw new Exception();
+            if(!regexes.commentLine(line)){
+                parsedData.add(line);
             }
         }
         return parsedData;
     }
 
-    public ClassScope getClassScope(){
-        return ClassScope;
-    }
 
 }

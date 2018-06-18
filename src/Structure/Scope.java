@@ -44,11 +44,18 @@ public class Scope {
      * @return the scope's lines (for debugging).
      */
     public String toString(){
-        StringBuilder scopeString = new StringBuilder("Scope lines are:");
-        for (Line line: lines){
-            scopeString.append(" " + line.getNumber());
+        String scopeString = "Scope lines are:   ";
+        for (Line line : lines){
+            if(line.getScope() != null){
+                scopeString += " < ";
+                scopeString += line.getScope().toString();
+                scopeString += " > ";
+            }
+            else{
+                scopeString += line.toString();
+            }
         }
-        return scopeString.toString();
+        return scopeString;
     }
 
     /**
