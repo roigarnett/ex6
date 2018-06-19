@@ -1,5 +1,5 @@
 package Parsing;
-import Structure.VariableTypes;
+import Structure.*;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -8,9 +8,9 @@ import java.util.regex.Pattern;
 public class regexes {
 
 
-    static String endLineSemicolon = ";\\s*$";
-    static String endLineBrackets = "\\{\\s*$";
-    static String CloseBracketLine = "^\\s*\\}\\s*$";
+    private static Pattern endLineSemicolon = Pattern.compile(";\\s*$");
+    private static Pattern OpenBracketLine = Pattern.compile("\\{\\s*$");
+    private static Pattern CloseBracketLine = Pattern.compile("^\\s*\\}\\s*$");
 
     static String Type = "^(int|String|boolean|double|float)$";
     static String INT = "^\\s*int\\s{1,}[a-zA-Z]\\S*";
@@ -28,12 +28,17 @@ public class regexes {
     static String VariablePlacement = "^\\s*=\\s*[a-zA-Z]\\S*\\s*$";
     static String ARGUMENTSCALL = "^\\s*(int|String|boolean|float|double\\s{1,}+[a-zA-Z],)^\\S*\\s*";
 
-    static String MethodDecleration = "^\\s*void\\s{1,}[a-zA-Z]\\S*\\s*\\(.*\\)\\s*\\{\\s*$";
-    static String Return = "^\\s*return\\s*$";
-    static String WHILE = "^\\s*while\\s*\\(.*\\)\\s*\\{\\s*$";
-    static String IF = "^\\s*if\\s*\\(.*\\)\\s*\\{\\s*$";
+    private static Pattern MethodDecleration = Pattern.compile("^\\s*void\\s{1,}[a-zA-Z]\\S*\\s*\\(.*\\)\\s*\\{\\s*$");
+    private static Pattern Return = Pattern.compile("^\\s*return\\s*$");
+    private static Pattern WHILE = Pattern.compile("^\\s*while\\s*\\(.*\\)\\s*\\{\\s*$");
+    private static Pattern IF = Pattern.compile("^\\s*if\\s*\\(.*\\)\\s*\\{\\s*$");
 
-    static String CommentLine = "^\\s*//";
+    private static Pattern BasicBooleanExpression = Pattern.compile("(true|false)");
+    private static Pattern BasicCompareExpression = Pattern.compile("(==|<|>|<=|>=)");
+    private static Pattern BasicVariableName = Pattern.compile("^[a-zA-Z]\\S*");
+
+    private static Pattern CommentLine = Pattern.compile("^\\s*//");
+    private static Pattern MethodCall = Pattern.compile("[a-zA-Z]\\S*\\s{0,1}\\(.*\\)$");
 
     static String ORCondition = ".*||.*";
     static String ANDCondition = ".*&&.*";
@@ -42,7 +47,7 @@ public class regexes {
      * @param dataWithBrackets a string containing brackets
      * @return the characters inside the brackets
      */
-    public static String dataInBrackets(String dataWithBrackets){
+    private static String dataInBrackets(String dataWithBrackets){
         String[] splitted = dataWithBrackets.split("\\(");
         String[] data = (splitted[1]).split("\\)");
         return data[0];
@@ -52,7 +57,7 @@ public class regexes {
      * @param dataWithSpaces a string
      * @return the string without whitespaces at the beggining and end
      */
-    public static String removeOuterWhiteSpaces(String dataWithSpaces){
+    private static String removeOuterWhiteSpaces(String dataWithSpaces){
         String startRegex = "\\S{1,}.*$";
         Pattern startPattern = Pattern.compile(startRegex);
         Matcher startMathcher = startPattern.matcher(dataWithSpaces);
@@ -76,7 +81,7 @@ public class regexes {
      * @param dataWithSpaces a string with whitespaces
      * @return the string without whitespaces
      */
-    public static String removeWhiteSpaces(String dataWithSpaces){
+    private static String removeWhiteSpaces(String dataWithSpaces){
         String[] splitted = dataWithSpaces.split(" ");
         String resultString = "";
         for(String word : splitted){
@@ -87,39 +92,50 @@ public class regexes {
         return removeOuterWhiteSpaces(resultString);
     }
 
-    public static boolean startNewScope(String data){
-        Pattern r = Pattern.compile(endLineBrackets);
-        Matcher m = r.matcher(data);
+
+
+
+    private static boolean genericPatternMatcher(String data,Pattern regex){
+        Matcher m = regex.matcher(data);
         return m.find();
+    }
+
+
+
+    public static boolean startScope(String data){
+        return genericPatternMatcher(data,OpenBracketLine);
     }
 
     public static boolean endScope(String data){
-        Pattern r = Pattern.compile(CloseBracketLine);
-        Matcher m = r.matcher(data);
-        return m.find();
+        return genericPatternMatcher(data,CloseBracketLine);
     }
 
     public static boolean MethodDecleration(String data){
-        Pattern r = Pattern.compile(MethodDecleration);
-        Matcher m = r.matcher(data);
-        return m.find();
+        return genericPatternMatcher(data,MethodDecleration);
     }
 
     public static boolean conditionCall(String data){
-        return genericPatternMatcher(data, WHILE) || genericPatternMatcher(data, IF);
+        return (genericPatternMatcher(data, WHILE) || genericPatternMatcher(data, IF));
     }
 
     public static boolean commentLine(String data){
-        Pattern r = Pattern.compile(CommentLine);
-        Matcher m = r.matcher(data);
-        return m.find();
+        return genericPatternMatcher(data,CommentLine);
     }
 
-    public static boolean genericPatternMatcher(String data,String regex){
-        Pattern r = Pattern.compile(regex);
-        Matcher m = r.matcher(data);
-        return m.find();
+    public static boolean methodCall(String data){
+        data = removeWhiteSpaces(data);
+        return genericPatternMatcher(data,MethodCall) && (!startScope(data));
     }
+
+    public static boolean returnCall(String data){
+        return genericPatternMatcher(data,Return);
+    }
+
+    public static boolean semicolon(String data){
+        return genericPatternMatcher(data,endLineSemicolon);
+    }
+
+
 
     public static String MethodDeclerationName(String data){
         String[] splitted = removeWhiteSpaces(data).split(" ");
@@ -130,43 +146,65 @@ public class regexes {
         return name;
     }
 
-    public static ArrayList<VariableTypes> MethodDeclerationTypes(String data){
+    public static ArrayList<Variable> MethodDeclerationVars(String data) throws Exception{
         String[] splitted = dataInBrackets(data).split(",");
-        ArrayList<VariableTypes> types = new ArrayList<VariableTypes>();
+        ArrayList<Variable> vars = new ArrayList<Variable>();
         for(int i = 0; i < splitted.length; i++){
-            String typeName = splitted[i].split(" ")[0];
-            types.add(VariableTypes.getType(typeName));
+            String[] variableData = splitted[i].split(" ");
+            boolean isFinal = false;
+            if(variableData.length > 3){
+                throw new Exception();
+            }
+            if(variableData.length == 3 && !variableData[0].equals("final")){
+                throw new Exception();
+            }
+            if(variableData.length == 1){
+                throw new Exception();
+            }
+            if(variableData.length == 3){
+                isFinal = true;
+            }
+            String typeName = variableData[variableData.length - 2];
+            String varName = variableData[variableData.length - 1];
+            VariableTypes type = VariableTypes.getType(typeName);
+            Variable var = new Variable(type,varName,isFinal,true);
+            vars.add(var);
         }
-        return types;
+        return vars;
     }
 
-    public static boolean isDecleration(String data){
+    public static ArrayList<String> conditionTerm(String data){
+        ArrayList<String> vars = new ArrayList<String>();
+        data = dataInBrackets(data);
+        String[] spllited = data.split("(\\|\\||&&)");
+        for(String term : spllited){
+            vars.addAll(conditionTermHelp(term));
+        }
+        return vars;
+    }
+
+    public static ArrayList<String> conditionTermHelp(String data){
+        ArrayList<String> vars = new ArrayList<String>();
         data = removeWhiteSpaces(data);
-        String[] splitted = data.split(" ");
-        return genericPatternMatcher(splitted[0],Type)
-                || genericPatternMatcher(splitted[1],Type);
+        if(genericPatternMatcher(data,BasicBooleanExpression)){
+            return vars;
+        }
+        String[] splitted = data.split("(==|<|>|<=|>=)");
+        for(String name : splitted){
+            if(genericPatternMatcher(removeWhiteSpaces(name),BasicVariableName)){
+                vars.add(removeWhiteSpaces(name));
+            }
+        }
+        return vars;
     }
 
-    public static boolean isPlacement(String data){
-        return genericPatternMatcher(data,"=");
-    }
 
-    public static boolean isMultiply(String data){
-        return genericPatternMatcher(data,",");
-    }
+
 
     public static void main (String[] args ) {
-        Pattern r = Pattern.compile(VariablePlacement);
-        String testString = "  =   a346";
-        Matcher m = r.matcher(testString);
-        if(m.find()){
-            System.out.println("sucseed");
+        ArrayList<String> al = conditionTerm("while(a == 5 ||   4 - 1 < dwdg  && true)") ;
+        for(String s : al){
+            System.out.println(s);
         }
-        else{
-            System.out.println("failed");
-        }
-        String test = "     aa   aa aa     aa    ";
-        System.out.println(removeWhiteSpaces(test));
-
     }
 }

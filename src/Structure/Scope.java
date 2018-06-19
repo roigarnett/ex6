@@ -40,6 +40,10 @@ public class Scope {
         return this.variables;
     }
 
+    public Scope getFather(){
+        return this.father;
+    }
+
     /**
      * @return the scope's lines (for debugging).
      */

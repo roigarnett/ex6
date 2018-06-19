@@ -5,9 +5,9 @@ import java.util.ArrayList;
 public class MethodDecleration {
 
     private String name;
-    private ArrayList<VariableTypes> args;
+    private ArrayList<Variable> args;
 
-    public MethodDecleration(String name, ArrayList<VariableTypes> args) {
+    public MethodDecleration(String name, ArrayList<Variable> args) {
         this.name = name;
         this.args = args;
     }
@@ -16,7 +16,7 @@ public class MethodDecleration {
         return name;
     }
 
-    public ArrayList<VariableTypes> getArgs() {
+    public ArrayList<Variable> getArgs() {
         return args;
     }
 }

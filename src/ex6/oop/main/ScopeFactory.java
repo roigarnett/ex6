@@ -23,7 +23,7 @@ public class ScopeFactory {
 //        classScope = new ClassScope();
 //        for(int i=0; i<data.size(); i++) {
 //            String line = data.get(i);
-//            if (regexes.startNewScope(line)) {
+//            if (regexes.startScope(line)) {
 //                if (openedScopes.isEmpty()) {
 //                    openedScopes.push(new MethodScope(classScope));
 //                }
@@ -66,7 +66,7 @@ public class ScopeFactory {
         Scope scope = new ClassScope();
         for(int i = 0; i < data.size(); i++){
             String line = data.get(i);
-            if(regexes.startNewScope(line)){
+            if(regexes.startScope(line)){
                 Scope innerscope = createMethodScope(trimList(data,i),scope);
                 scope.addLine(new Line(line,innerscope));
                 i = i + innerscope.getLines().size() - 1;
@@ -83,7 +83,7 @@ public class ScopeFactory {
         scope.addLine(new Line(data.get(0)));
         for(int i = 1; i < data.size(); i++){
             String line = data.get(i);
-            if(regexes.startNewScope(line)){
+            if(regexes.startScope(line)){
                 Scope innerscope = createConditionScope(trimList(data,i),scope);
                 scope.addLine(new Line(line,innerscope));
                 i = i + innerscope.getLines().size() - 3;
@@ -104,7 +104,7 @@ public class ScopeFactory {
         scope.addLine(new Line(data.get(0)));
         for(int i = 1; i < data.size(); i++){
             String line = data.get(i);
-            if(regexes.startNewScope(line)){
+            if(regexes.startScope(line)){
                 Scope innerscope = createConditionScope(trimList(data,i),scope);
                 scope.addLine(new Line(line,innerscope));
                 i = i + innerscope.getLines().size() - 3;

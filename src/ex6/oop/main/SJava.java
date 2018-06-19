@@ -12,6 +12,7 @@ import java.io.File;
 public class SJava {
 
     public static void main(String [] args){
+        int a = 5,b = 3,c;
         try{
             File sourceFile = new File(args[0]);
             ArrayList<String> data = extractData(sourceFile);
