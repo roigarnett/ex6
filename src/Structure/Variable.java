@@ -51,6 +51,10 @@ public class Variable {
         this.initialized = true;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         String varString = type.toString() + " " + name;

@@ -4,7 +4,7 @@ package Structure;
  * Types of variables in simple java.
  */
 public enum VariableTypes {
-    INT, STRING, BOOLEAN, DOUBLE, FLOAT, ERROR;
+    INT, STRING, BOOLEAN, DOUBLE, FLOAT, ERROR, OTHER_VAR, FLOAT_OR_DOUBLE;
 
 
     public static VariableTypes getType(String data){
@@ -22,6 +22,12 @@ public enum VariableTypes {
         }
         else if(data.equals("double")){
             return DOUBLE;
+        }
+        else if(data.equals("otherVar")){
+            return OTHER_VAR;
+        }
+        else if(data.equals("floatOrDouble")){
+            return FLOAT_OR_DOUBLE;
         }
         else{
             return ERROR;

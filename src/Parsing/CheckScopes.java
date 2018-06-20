@@ -18,7 +18,7 @@ public class CheckScopes {
 
     public static void checkMethodScope(MethodScope scope) throws Exception{
         scope.getGlobalVariables().addAll(scope.getFather().getVariables());
-        MethodDecleration md = checkMethodDecleration(scope.getLines().get(0).getContent());
+        MethodDeclaration md = checkMethodDecleration(scope.getLines().get(0).getContent());
         scope.getVariables().addAll(md.getArgs());
         for(int i = 1; i < scope.getLines().size() - 2; i ++){
             Line line = scope.getLines().get(i);
@@ -52,13 +52,13 @@ public class CheckScopes {
         }
     }
 
-    private static MethodDecleration checkMethodDecleration(String data) throws Exception{
+    private static MethodDeclaration checkMethodDecleration(String data) throws Exception{
         if(!regexes.MethodDecleration(data)){
             throw new Exception();
         }
         String name = regexes.MethodDeclerationName(data);
         ArrayList<Variable> vars = regexes.MethodDeclerationVars(data);
-        return new MethodDecleration(name,vars);
+        return new MethodDeclaration(name,vars);
     }
 
     private static ArrayList<String> checkConditionDecleration(String data) throws Exception{

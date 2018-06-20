@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class ClassScope extends Scope{
 
-    private ArrayList<MethodDecleration> MethodDeclerations;
+    private ArrayList<MethodDeclaration> methodDeclarations;
 
-    public void addMethodDecleration(MethodDecleration MethodDecleration){
-        this.MethodDeclerations.add(MethodDecleration);
+    public void addMethodDecleration(MethodDeclaration MethodDeclaration){
+        this.methodDeclarations.add(MethodDeclaration);
     }
 }

@@ -2,12 +2,12 @@ package Structure;
 
 import java.util.ArrayList;
 
-public class MethodDecleration {
+public class MethodDeclaration {
 
     private String name;
     private ArrayList<Variable> args;
 
-    public MethodDecleration(String name, ArrayList<Variable> args) {
+    public MethodDeclaration(String name, ArrayList<Variable> args) {
         this.name = name;
         this.args = args;
     }

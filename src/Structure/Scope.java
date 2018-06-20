@@ -62,6 +62,17 @@ public class Scope {
         return scopeString;
     }
 
+    public boolean isVarNameInScope(String name){
+        for (Variable var: variables){
+            if(var.getName().equals(name)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean is
+
     /**
      * prints the scope variables (for debugging).
      */

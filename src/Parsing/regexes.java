@@ -81,7 +81,7 @@ public class regexes {
      * @param dataWithSpaces a string with whitespaces
      * @return the string without whitespaces
      */
-    private static String removeWhiteSpaces(String dataWithSpaces){
+    public static String removeWhiteSpaces(String dataWithSpaces){
         String[] splitted = dataWithSpaces.split(" ");
         String resultString = "";
         for(String word : splitted){
