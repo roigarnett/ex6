@@ -20,6 +20,7 @@ public class CheckRegularLine {
 
     public static void main (String[] args ) throws Exception{
         Scope scope = new Scope();
+        checkLine(" return ", scope);
         checkLine("  final String  dsc    = true, dsjsd = sdius", scope);
         checkLine("int jsd = 212, dsjc = 2617, hoenc", scope);
         checkLine("String skdsd = ", scope);
@@ -42,7 +43,7 @@ public class CheckRegularLine {
         boolean isInitialized = false;
 
         int b;
-        String data = regexes.removeWhiteSpaces(line);
+        String data = BasicParsing.removeWhiteSpaces(line);
         isFinal = startsWithFinal(data);
         if (isFinal){
             data = data.split(startFinal)[1];
@@ -60,8 +61,8 @@ public class CheckRegularLine {
         }
 
         //check each line segment and update the scope variables.
-        for (String seg: lineSegments) {
-            seg = regexes.removeWhiteSpaces(seg);
+        for (String seg : lineSegments) {
+            seg = BasicParsing.removeWhiteSpaces(seg);
             System.out.println(seg);
             if (!isLegalPlacement(isFinal, seg, lineType, scope)) {
                 if (!isOnlyName(isFinal, seg, lineType, scope)) {
@@ -88,7 +89,8 @@ public class CheckRegularLine {
         return m.find();
     }
 
-    private static VariableTypes isDeclaration(String line) {
+
+    private static VariableTypes isDeclaration(String line) throws Exception{
         VariableTypes type = null;
         Pattern p = Pattern.compile(declarationString);
         Matcher m = p.matcher(line);
@@ -102,9 +104,7 @@ public class CheckRegularLine {
     }
 
 
-
-
-    private static VariableTypes checkPlacement(String line) {
+    private static VariableTypes checkPlacement(String line) throws Exception{
         VariableTypes placementType = null;
         String IntPlacement = "^\\s*\\d*\\s*$";
         String StringPlacement = "^\\s*\\w*\\s*$";
@@ -140,6 +140,7 @@ public class CheckRegularLine {
         return placementType;
 
     }
+
 
     private static boolean checkNameAndPlacementsTypes(boolean isFinal, VariableTypes lineType, String
             name, VariableTypes placementType, Scope scope)  throws Exception {
@@ -177,6 +178,7 @@ public class CheckRegularLine {
         }
         return true;
     }
+
 
     private static boolean isOnlyName(boolean isFinal, String expression, VariableTypes lineType, Scope
             scope) throws Exception {
@@ -254,7 +256,7 @@ public class CheckRegularLine {
         Matcher nameAndEqualsMatch = nameAndEqualsPattern.matcher(expression);
         if (nameAndEqualsMatch.find()) {
             onlyPlacement = expression.split(VariableNameWithPlacement)[1];
-            onlyPlacement = regexes.removeWhiteSpaces(onlyPlacement);
+            onlyPlacement = BasicParsing.removeWhiteSpaces(onlyPlacement);
             placementType = checkPlacement(onlyPlacement);
             if (placementType == VariableTypes.OTHER_VAR) {
                 Variable placementVar = scope.getVariableFromName(onlyPlacement);

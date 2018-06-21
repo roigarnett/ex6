@@ -5,28 +5,15 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class regexes {
+public class BasicParsing {
 
 
     private static Pattern endLineSemicolon = Pattern.compile(";\\s*$");
     private static Pattern OpenBracketLine = Pattern.compile("\\{\\s*$");
     private static Pattern CloseBracketLine = Pattern.compile("^\\s*\\}\\s*$");
 
-    static String Type = "^(int|String|boolean|double|float)$";
-    static String INT = "^\\s*int\\s{1,}[a-zA-Z]\\S*";
-    static String STRING = "^\\s*String\\s{1,}[a-zA-Z]\\S*";
-    static String BOOLEAN = "^\\s*boolean\\s{1,}[a-zA-Z]\\S*";
-    static String FLOAT = "^\\s*float\\s{1,}[a-zA-Z]\\S*";
-    static String DOUBLE = "^\\s*double\\s{1,}[a-zA-Z]\\S*";
-    static String SecondDecleration = "^\\s*,\\s*[a-zA-Z]\\S*";
-
-    static String Placement = "^\\s*=\\s*\\S*\\s*$";
-    static String IntPlacement = "^\\s*=\\s*\\d*\\s*$";
-    static String StringPlacement = "^\\s*=\\s*\\w*\\s*$";
-    static String BOOLEANPlacement = "^\\s*=\\s*(true|false)\\s*$";
-    static String FLOATorDOUBLEPlacement = "^\\s*=\\s*\\d{1,}\\.\\d{1,}\\s*$";
-    static String VariablePlacement = "^\\s*=\\s*[a-zA-Z]\\S*\\s*$";
-    static String ARGUMENTSCALL = "^\\s*(int|String|boolean|float|double\\s{1,}+[a-zA-Z],)^\\S*\\s*";
+    private static Pattern VARIABLENAME1 = Pattern.compile("^\\s*[a-zA-Z0-9_]{1,}\\s*$");
+    private static Pattern VARIABLENAME2 = Pattern.compile("[a-zA-Z0-9]");
 
     private static Pattern MethodDecleration = Pattern.compile("^\\s*void\\s{1,}[a-zA-Z]\\S*\\s*\\(.*\\)\\s*\\{\\s*$");
     private static Pattern Return = Pattern.compile("^\\s*return\\s*$");
@@ -34,14 +21,12 @@ public class regexes {
     private static Pattern IF = Pattern.compile("^\\s*if\\s*\\(.*\\)\\s*\\{\\s*$");
 
     private static Pattern BasicBooleanExpression = Pattern.compile("(true|false)");
-    private static Pattern BasicCompareExpression = Pattern.compile("(==|<|>|<=|>=)");
+    private static Pattern BasicNumericExpression = Pattern.compile("^\\s*-{0,1}\\d{1,}(\\.{0,1}\\d{1,}|)\\s*");
     private static Pattern BasicVariableName = Pattern.compile("^[a-zA-Z]\\S*");
 
-    private static Pattern CommentLine = Pattern.compile("^\\s*//");
+    private static Pattern CommentLine = Pattern.compile("^//");
     private static Pattern MethodCall = Pattern.compile("[a-zA-Z]\\S*\\s{0,1}\\(.*\\)$");
 
-    static String ORCondition = ".*||.*";
-    static String ANDCondition = ".*&&.*";
 
     /**
      * @param dataWithBrackets a string containing brackets
@@ -93,70 +78,117 @@ public class regexes {
     }
 
 
-
-
+    /**
+     * @param data a string we want to check
+     * @param regex a regex to match
+     * @return true iff the regex metches the data
+     */
     private static boolean genericPatternMatcher(String data,Pattern regex){
         Matcher m = regex.matcher(data);
         return m.find();
     }
 
 
-
+    /**
+     * @param data a string we want to check
+     * @return true iff the string starts a new scope
+     */
     public static boolean startScope(String data){
         return genericPatternMatcher(data,OpenBracketLine);
     }
 
+    /**
+     * @param data a string we want to check
+     * @return true iff the string ends a scope
+     */
     public static boolean endScope(String data){
         return genericPatternMatcher(data,CloseBracketLine);
     }
 
+    /**
+     * @param data a string we want to check
+     * @return true iff the string is a decleration on a new method
+     */
     public static boolean MethodDecleration(String data){
         return genericPatternMatcher(data,MethodDecleration);
     }
 
+    /**
+     * @param data a string we want to check
+     * @return true iff the string is a while or an if line
+     */
     public static boolean conditionCall(String data){
         return (genericPatternMatcher(data, WHILE) || genericPatternMatcher(data, IF));
     }
 
+    /**
+     * @param data a string we want to check
+     * @return true iff the line is a comment line
+     */
     public static boolean commentLine(String data){
         return genericPatternMatcher(data,CommentLine);
     }
 
+    /**
+     * @param data a string we want to check
+     * @return true iff the string is call for a method
+     */
     public static boolean methodCall(String data){
         data = removeWhiteSpaces(data);
         return genericPatternMatcher(data,MethodCall) && (!startScope(data));
     }
 
+    /**
+     * @param data a string we want to check
+     * @return true iff the string is a return call
+     */
     public static boolean returnCall(String data){
         return genericPatternMatcher(data,Return);
     }
 
-    public static boolean semicolon(String data){
-        return genericPatternMatcher(data,endLineSemicolon);
+    /**
+     * @param data a string we want to check
+     * @return true iff the string can represent a variable name
+     */
+    public static boolean variableName(String data){
+        return genericPatternMatcher(data,VARIABLENAME1) && genericPatternMatcher(data,VARIABLENAME2);
     }
 
 
-
-    public static String MethodDeclerationName(String data){
+    /**
+     * @param data a string representing a method decletration
+     * @return the name of the method
+     * @throws Exception if the method name is invalid
+     */
+    public static String MethodDeclerationName(String data) throws Exception{
         String[] splitted = removeWhiteSpaces(data).split(" ");
         String name = splitted[0];
         if(name.contains("(")){
             return (name.split("\\("))[0];
         }
+        name = removeWhiteSpaces(name);
+        if(!variableName(name)){
+            throw new Exception("An invalid method name");
+        }
         return name;
     }
 
+    /**
+     * @param data string representing a method decleration
+     * @return a list of variables the method gets
+     * @throws Exception if one of the variable declerations is invalid
+     */
     public static ArrayList<Variable> MethodDeclerationVars(String data) throws Exception{
         String[] splitted = dataInBrackets(data).split(",");
         ArrayList<Variable> vars = new ArrayList<Variable>();
         for(int i = 0; i < splitted.length; i++){
-            String[] variableData = splitted[i].split(" ");
+            String[] variableData = removeWhiteSpaces(splitted[i]).split(" ");
             boolean isFinal = false;
             if(variableData.length > 3){
-                throw new Exception();
+                throw new Exception("An error occurod while processing the method's variables");
             }
             if(variableData.length == 3 && !variableData[0].equals("final")){
-                throw new Exception();
+                throw new Exception("An error occurod while processing the method's variables");
             }
             if(variableData.length == 1){
                 throw new Exception();
@@ -166,6 +198,10 @@ public class regexes {
             }
             String typeName = variableData[variableData.length - 2];
             String varName = variableData[variableData.length - 1];
+            if(!variableName(varName)){
+                throw new Exception("A bad variable name - " +
+                        varName + " can't be a variable name");
+            }
             VariableTypes type = VariableTypes.getType(typeName);
             Variable var = new Variable(type,varName,isFinal,true);
             vars.add(var);
@@ -173,7 +209,12 @@ public class regexes {
         return vars;
     }
 
-    public static ArrayList<String> conditionTerm(String data){
+    /**
+     * @param data a string representing an if \ while line
+     * @return a list of variabel names which need to be declared boolean variables
+     * @throws Exception if the condition term is invalid
+     */
+    public static ArrayList<String> conditionTerm(String data)  throws Exception{
         ArrayList<String> vars = new ArrayList<String>();
         data = dataInBrackets(data);
         String[] spllited = data.split("(\\|\\||&&)");
@@ -183,28 +224,38 @@ public class regexes {
         return vars;
     }
 
-    public static ArrayList<String> conditionTermHelp(String data){
+    /**
+     * @param data a string representing a basic condition term
+     * @return a variable name, if the string is a variable name
+     * @throws Exception if the string isn't a variable name and isn't a boolean conditon
+     */
+    private static ArrayList<String> conditionTermHelp(String data) throws Exception{
         ArrayList<String> vars = new ArrayList<String>();
         data = removeWhiteSpaces(data);
-        if(genericPatternMatcher(data,BasicBooleanExpression)){
+        if(genericPatternMatcher(data,BasicBooleanExpression) ||
+                genericPatternMatcher(data,BasicNumericExpression)){
             return vars;
         }
-        String[] splitted = data.split("(==|<|>|<=|>=)");
-        for(String name : splitted){
-            if(genericPatternMatcher(removeWhiteSpaces(name),BasicVariableName)){
-                vars.add(removeWhiteSpaces(name));
-            }
+        if(variableName(data)){
+            vars.add(data);
+            return vars;
         }
-        return vars;
+        throw new Exception("A while or if loop was given a non - boolean parameter. " +
+                data + " is not a boolean condition");
+    }
+
+    public static String checkSemicolon(String data) throws Exception{
+        if(!genericPatternMatcher(data,endLineSemicolon)){
+            throw new Exception("No semicolon at the end of the line");
+        }
+        data = data.split(";")[0];
+        return data;
     }
 
 
 
-
-    public static void main (String[] args ) {
-        ArrayList<String> al = conditionTerm("while(a == 5 ||   4 - 1 < dwdg  && true)") ;
-        for(String s : al){
-            System.out.println(s);
-        }
+    public static void main (String[] args ) throws Exception{
+        String str = "A___";
+        System.out.println(variableName(str));
     }
 }

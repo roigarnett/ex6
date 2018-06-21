@@ -16,6 +16,20 @@ public class MethodScope extends Scope {
         this.globalVariables = new ArrayList<Variable>();
     }
 
+    public Variable getVariableFromName(String name){
+        for (Variable var : this.getVariables()) {
+            if (var.getName().equals(name)) {
+                return var;
+            }
+        }
+        for (Variable var : this.globalVariables) {
+            if (var.getName().equals(name)) {
+                return var;
+            }
+        }
+        return null;
+    }
+
     public ArrayList<Variable> getGlobalVariables(){
         return this.globalVariables;
     }

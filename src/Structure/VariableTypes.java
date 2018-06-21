@@ -7,7 +7,7 @@ public enum VariableTypes {
     INT, STRING, BOOLEAN, DOUBLE, CHAR, ERROR, OTHER_VAR;
 
 
-    public static VariableTypes getType(String data){
+    public static VariableTypes getType(String data) throws Exception{
         if(data.equals("int")){
             return INT;
         }
@@ -27,7 +27,7 @@ public enum VariableTypes {
             return OTHER_VAR;
         }
         else{
-            return ERROR;
+            throw new Exception("Unrecognized variable type at method decleration");
         }
     }
 
@@ -35,12 +35,13 @@ public enum VariableTypes {
         return var1.getType() == var2.getType();
     }
 
-    public static boolean isStringMatchVariableType(String str, Variable var){
+    public static boolean isStringMatchVariableType(String str, Variable var) throws Exception{
         return getType(str) == var.getType();
     }
 
     public static boolean isPlacementPossible(VariableTypes nameType, VariableTypes placementType){
         return (nameType==placementType || (nameType==INT && placementType==DOUBLE) || (nameType==STRING &&
-                placementType==CHAR));
+                placementType==CHAR) || (nameType==BOOLEAN && placementType==DOUBLE)
+                || (nameType==BOOLEAN && placementType==INT));
     }
 }

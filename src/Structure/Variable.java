@@ -63,10 +63,9 @@ public class Variable {
 
     }
 
-    public String getName() {
-        return name;
+    public String getName(){
+        return this.name;
     }
-
 
     public VariableTypes getType() {
         return type;

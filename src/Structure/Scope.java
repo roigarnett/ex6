@@ -29,7 +29,7 @@ public class Scope {
     }
 
     public void addVariable(Variable variable) throws Exception{
-        if(isVarNameInScope(variable.getName())){
+        if(getVariableFromName(variable.getName()) != null){
             throw new Exception("var name already exist");
         }
         this.variables.add(variable);
@@ -65,20 +65,15 @@ public class Scope {
         return scopeString;
     }
 
-    public boolean isVarNameInScope(String name){
-        for (Variable var: variables){
-            if(var.getName().equals(name)){
-                return true;
-            }
-        }
-        return false;
-    }
-
     public Variable getVariableFromName(String name){
-        for (Variable var: variables){
-            if(var.getName().equals(name)){
-                return var;
+        Scope currentScope = this;
+        while(currentScope != null) {
+            for (Variable var : currentScope.getVariables()) {
+                if (var.getName().equals(name)) {
+                    return var;
+                }
             }
+            currentScope = currentScope.getFather();
         }
         return null;
     }
@@ -91,5 +86,15 @@ public class Scope {
         for (int i=0; i<getVariables().size(); i++){
             System.out.print(getVariables().get(i).toString());
         }
+    }
+
+    public ClassScope getClassScope(){
+        Scope currentScope = this;
+        Scope father = currentScope.getFather();
+        while(father != null) {
+            currentScope = father;
+            father = currentScope.getFather();
+        }
+        return (ClassScope)currentScope;
     }
 }
