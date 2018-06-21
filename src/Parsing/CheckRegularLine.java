@@ -20,7 +20,7 @@ public class CheckRegularLine {
 
     public static void main (String[] args ) throws Exception{
         Scope scope = new Scope();
-        checkLine(" final String  dsc    = true", scope);
+        checkLine(" final boolean  dsc    = true", scope);
         scope.printScopeVariables();
 
     }
@@ -166,7 +166,6 @@ public class CheckRegularLine {
             if(lineType!=null){
                 throw new Exception("you cant declare a variable that's already been declared");
             }
-
             else if (!VariableTypes.isPlacementPossible(varInScope.getType(), placementType)){
                 throw new Exception("variable type and placement type do not match");
             }
