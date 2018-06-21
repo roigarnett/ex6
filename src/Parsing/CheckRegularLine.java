@@ -1,6 +1,7 @@
 package Parsing;
 
 import Structure.Scope;
+import Structure.Variable;
 import Structure.VariableTypes;
 
 import java.util.regex.Matcher;
@@ -49,22 +50,21 @@ public class CheckRegularLine {
             lineSegments = new String[1];
             lineSegments[0] = data;
         }
+
+        //check each line segment and send update the scope parameters.
         for (String seg: lineSegments) {
-
             seg = regexes.removeWhiteSpaces(seg);
-
-
             System.out.println(seg);
-            if (!isLegalPlacement(seg, lineType, scope)) {
-                if (!isOnlyName(seg)) {
+            if (!isLegalPlacement(isFinal, seg, lineType, scope)) {
+                if (!isOnlyName(isFinal, seg, lineType, scope)) {
                     throw new Exception("not a placement or a name!!!");
                 }
                 else{
-                    System.out.println("declaring of var " );
+                    System.out.println(" declared a new var and updated scope vars " );
                 }
             }
             else {
-                System.out.println(" placement a new var " );
+                System.out.println(" placed a new var and updated scope vars " );
             }
 
         }
@@ -75,34 +75,25 @@ public class CheckRegularLine {
 
     }
 
+
     public static void main (String[] args ) throws Exception{
-        checkLine(" final String  dsc    = true, reas ,fsdf = 32233, djdjd = 327832, fidjfd==dsjf, " +
+        Scope scope = new Scope();
+        checkLine(" final String  dsc    = true, fsdf = ds32233, djdjd = fd327832, fidjfd==dsjf, " +
                 "fjfd=fdks" +
                 ".sdj" +
-                " ", new Scope());
+                " ", scope);
 
     }
 
-    public static boolean endsWithSemicolon(String line) throws Exception {
 
-        Pattern p = Pattern.compile(semicolonEnd);
-        Matcher m = p.matcher(line);
-        if (m.find()){
-            return true;
-        }
-        else {
-            throw new Exception("line does not end with ;");
-        }
-    }
-
-    public static boolean startsWithFinal(String line) {
+    private static boolean startsWithFinal(String line) {
 
         Pattern p = Pattern.compile(startFinal);
         Matcher m = p.matcher(line);
         return m.find();
     }
 
-    public static VariableTypes isDeclaration(String line) {
+    private static VariableTypes isDeclaration(String line) {
         VariableTypes type = null;
         Pattern p = Pattern.compile(declarationString);
         Matcher m = p.matcher(line);
@@ -115,55 +106,8 @@ public class CheckRegularLine {
         return type;
     }
 
-    /**
-     * Checks if a given lin is a placement and if so updates the type of the placed value.
-     * @param line the given line
-     * @return true iff it is a good placement
-     * @throws Exception if it is a wrong placement
-     */
-    private static boolean isLegalPlacement(String line, VariableTypes lineType, Scope scope ) throws
-            Exception{
-
-        Pattern p = Pattern.compile(fullPlacement);
-        Matcher m = p.matcher(line);
-
-        if(m.find()){
-            String onlyPlacement = null;
-            String name = null;
-
-            //extract placement
-            Pattern nameAndEqualsPattern = Pattern.compile(VariableNameWithPlacement);
-            Matcher nameAndEqualsMatch = nameAndEqualsPattern.matcher(line);
-            if(nameAndEqualsMatch.find()){
-                onlyPlacement = line.split(VariableNameWithPlacement)[1];
-            }
-            else {
-                System.out.println("what the f*ck");
-            }
-
-            //extract name
-            Pattern namePattern = Pattern.compile(VariableNameWithPlacement);
-            Matcher nameMatch = namePattern.matcher(line);
-            if(nameMatch.find()){
-                name = line.substring(nameMatch.start(), nameMatch.end());
-            }
-            else {
-                System.out.println("what the f*ck");
-            }
-
-            checkNameAndPlacementsTypes(lineType, name, onlyPlacement);
-
-            System.out.println(onlyPlacement);
-            VariableTypes placementType = checkPlacement(onlyPlacement);
-            if(placementType==null){
-                throw new Exception("bad placement of variable!!");
-            }
 
 
-            return true;
-        }
-        return false;
-    }
 
     private static VariableTypes checkPlacement(String line) {
         VariableTypes placementType = null;
@@ -202,20 +146,137 @@ public class CheckRegularLine {
 
     }
 
-    private static boolean isOnlyName(String line) {
+    private static boolean checkNameAndPlacementsTypes(boolean isFinal, VariableTypes lineType, String
+            name, VariableTypes placementType, Scope scope)  throws Exception {
+
+        Variable varInScope = scope.getVariableFromName(name);
+        //no variable with such name in scope
+        if(varInScope==null){
+            if(lineType!=null){
+                if(!VariableTypes.isPlacementPossible(lineType, placementType)){
+                    throw new Exception("variable type and placement type do not match");
+                }
+                else{
+                    scope.addVariable(new Variable(lineType, name, isFinal, true));
+                    return true;
+                }
+
+            }
+            else {
+                throw new Exception("var does not exist!!");
+            }
+        }
+
+        //there is another variable with this name in this scope.
+        else {
+
+            if(lineType!=null){
+                throw new Exception("you cant declare a variable that's already been declared");
+            }
+
+            else if (!VariableTypes.isPlacementPossible(varInScope.getType(), placementType)){
+                throw new Exception("variable type and placement type do not match");
+            }
+        }
+        return true;
+    }
+
+    private static boolean isOnlyName(boolean isFinal, String expression, VariableTypes lineType, Scope
+            scope) throws Exception {
+        String name;
         Pattern p = Pattern.compile(OnlyVariableName);
-        Matcher m = p.matcher(line);
+        Matcher m = p.matcher(expression);
         boolean isName = m.find();
         if (isName) {
-            name = line;
+            name = expression;
+        }
+        else {
+            throw new Exception("not a valid name for var");
+        }
+        if (lineType==null){
+            throw new Exception("there is no meaning for the line");
+        }
+        else {
+            scope.addVariable(new Variable(lineType, name, isFinal));
         }
         return isName;
     }
 
-//    public String toString(){
-//        return type.toString() + " " + name + " " + " initialized with " + placementType + " final? " +
-//                isFinal;
-//    }
+    /**
+     * Checks if a given lin is a placement and if so updates the type of the placed value.
+     * @param line the given line
+     * @return true iff it is a good placement
+     * @throws Exception if it is a wrong placement
+     */
+    private static boolean isLegalPlacement(boolean isFinal, String line, VariableTypes lineType, Scope
+            scope ) throws Exception{
+
+        Pattern p = Pattern.compile(fullPlacement);
+        Matcher m = p.matcher(line);
+
+        if(m.find()){
+            String name = null;
+            VariableTypes placementType = extractPlacementType(line, scope);
+            name = extractVarName(line, name);
+            checkNameAndPlacementsTypes(isFinal, lineType, name, placementType, scope);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * extracts the variable name from a given expression
+     * @param expression
+     * @param name
+     * @return
+     */
+    private static String extractVarName(String expression, String name) {
+        Pattern namePattern = Pattern.compile(VariableNameWithPlacement);
+        Matcher nameMatch = namePattern.matcher(expression);
+        if(nameMatch.find()){
+            name = expression.substring(nameMatch.start(), nameMatch.end());
+        }
+        else {
+            System.out.println("what the f*ck");
+        }
+        return name;
+    }
+
+    /**
+     * extarct placement type from expression
+     * @param expression
+     * @param scope
+     * @return
+     * @throws Exception if placement is another variable and does not exist and if placement is not
+     * recognized
+     */
+    private static VariableTypes extractPlacementType(String expression, Scope scope) throws Exception{
+        String onlyPlacement;
+        VariableTypes placementType = null;
+        Pattern nameAndEqualsPattern = Pattern.compile(VariableNameWithPlacement);
+        Matcher nameAndEqualsMatch = nameAndEqualsPattern.matcher(expression);
+        if (nameAndEqualsMatch.find()) {
+            onlyPlacement = expression.split(VariableNameWithPlacement)[1];
+            onlyPlacement = regexes.removeWhiteSpaces(onlyPlacement);
+            placementType = checkPlacement(onlyPlacement);
+            if (placementType == VariableTypes.OTHER_VAR) {
+                Variable placementVar = scope.getVariableFromName(onlyPlacement);
+                if (placementVar == null) {
+                    throw new Exception("placement variable does not exist");
+                }
+                placementType = placementVar.getType();
+            }
+            System.out.println(onlyPlacement);
+            if (placementType == null) {
+                throw new Exception("bad placement of variable!!");
+            }
+        } else {
+            System.out.println("what the f*ck");
+        }
+
+        return placementType;
+    }
+
 }
 
 

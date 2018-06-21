@@ -18,11 +18,14 @@ public class Variable {
      * @param isFinal
      * @param initialized
      */
-    public Variable(VariableTypes type, String name, boolean isFinal, boolean initialized) {
+    public Variable(VariableTypes type, String name, boolean isFinal, boolean initialized) throws Exception{
         this.type = type;
         this.name = name;
         this.isFinal = isFinal;
         this.initialized = initialized;
+        if(isFinal && !initialized){
+            throw new Exception("Variable can't be initialized because it is final");
+        }
     }
 
     /**
@@ -31,10 +34,14 @@ public class Variable {
      * @param name
      * @param isFinal
      */
-    public Variable(VariableTypes type, String name, boolean isFinal) {
+    public Variable(VariableTypes type, String name, boolean isFinal) throws Exception{
         this.type = type;
         this.name = name;
         this.isFinal = isFinal;
+        if(isFinal){
+            throw new Exception("Variable can't be initialized because it is final");
+        }
+
     }
 
     /**

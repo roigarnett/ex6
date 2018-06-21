@@ -28,7 +28,10 @@ public class Scope {
         this.lines.add(line);
     }
 
-    public void addVariable(Variable variable){
+    public void addVariable(Variable variable) throws Exception{
+        if(isVarNameInScope(variable.getName())){
+            throw new Exception("var name already exist");
+        }
         this.variables.add(variable);
     }
 
@@ -69,6 +72,15 @@ public class Scope {
             }
         }
         return false;
+    }
+
+    public Variable getVariableFromName(String name){
+        for (Variable var: variables){
+            if(var.getName().equals(name)){
+                return var;
+            }
+        }
+        return null;
     }
 
     /**
