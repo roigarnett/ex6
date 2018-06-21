@@ -55,6 +55,11 @@ public class Variable {
         return name;
     }
 
+
+    public VariableTypes getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         String varString = type.toString() + " " + name;

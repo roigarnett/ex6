@@ -71,8 +71,6 @@ public class Scope {
         return false;
     }
 
-    public boolean is
-
     /**
      * prints the scope variables (for debugging).
      */

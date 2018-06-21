@@ -1,5 +1,6 @@
 package Parsing;
 
+import Structure.Scope;
 import Structure.VariableTypes;
 
 import java.util.regex.Matcher;
@@ -12,6 +13,7 @@ public class CheckRegularLine {
     static final String declarationString = "^(int|String|boolean|double|float)\\s";
     static final String fullPlacement = "^[a-zA-Z]\\S*\\s*=\\s*\\S*\\s*$";
     static final String VariableNameWithPlacement = "^[a-zA-Z_][a-zA-Z_0-9]*\\s*=";
+    static final String VariableName = "^[a-zA-Z_][a-zA-Z_0-9]*";
     static final String OnlyVariableName = "^[a-zA-Z_][a-zA-Z_0-9]*$";
 
 
@@ -23,14 +25,14 @@ public class CheckRegularLine {
      * @return
      * @throws Exception
      */
-    static boolean checkLine(String line) throws Exception{
+    static boolean checkLine(String line, Scope scope) throws Exception{
         boolean isFinal;
         VariableTypes lineType = null;
         VariableTypes placementType = null;
         String name = null;
         boolean isInitialized = false;
 
-
+        int b;
         String data = regexes.removeWhiteSpaces(line);
         isFinal = startsWithFinal(data);
         if (isFinal){
@@ -53,7 +55,7 @@ public class CheckRegularLine {
 
 
             System.out.println(seg);
-            if (!isPlacement(seg)) {
+            if (!isLegalPlacement(seg, lineType, scope)) {
                 if (!isOnlyName(seg)) {
                     throw new Exception("not a placement or a name!!!");
                 }
@@ -77,7 +79,7 @@ public class CheckRegularLine {
         checkLine(" final String  dsc    = true, reas ,fsdf = 32233, djdjd = 327832, fidjfd==dsjf, " +
                 "fjfd=fdks" +
                 ".sdj" +
-                " ");
+                " ", new Scope());
 
     }
 
@@ -119,25 +121,41 @@ public class CheckRegularLine {
      * @return true iff it is a good placement
      * @throws Exception if it is a wrong placement
      */
-    private static boolean isPlacement(String line) throws Exception{
+    private static boolean isLegalPlacement(String line, VariableTypes lineType, Scope scope ) throws
+            Exception{
 
         Pattern p = Pattern.compile(fullPlacement);
         Matcher m = p.matcher(line);
 
         if(m.find()){
+            String onlyPlacement = null;
+            String name = null;
 
+            //extract placement
+            Pattern nameAndEqualsPattern = Pattern.compile(VariableNameWithPlacement);
+            Matcher nameAndEqualsMatch = nameAndEqualsPattern.matcher(line);
+            if(nameAndEqualsMatch.find()){
+                onlyPlacement = line.split(VariableNameWithPlacement)[1];
+            }
+            else {
+                System.out.println("what the f*ck");
+            }
+
+            //extract name
             Pattern namePattern = Pattern.compile(VariableNameWithPlacement);
             Matcher nameMatch = namePattern.matcher(line);
-
             if(nameMatch.find()){
                 name = line.substring(nameMatch.start(), nameMatch.end());
             }
             else {
                 System.out.println("what the f*ck");
             }
-            String onlyPlacement = line.split(VariableNameWithPlacement)[1];
+
+            checkNameAndPlacementsTypes(lineType, name, onlyPlacement);
+
             System.out.println(onlyPlacement);
-            if(checkPlacement(onlyPlacement)!=null){
+            VariableTypes placementType = checkPlacement(onlyPlacement);
+            if(placementType==null){
                 throw new Exception("bad placement of variable!!");
             }
 
@@ -149,7 +167,6 @@ public class CheckRegularLine {
 
     private static VariableTypes checkPlacement(String line) {
         VariableTypes placementType = null;
-        boolean isFound = false;
         String IntPlacement = "^\\s*\\d*\\s*$";
         String StringPlacement = "^\\s*\\w*\\s*$";
         String BOOLEANPlacement = "^\\s*(true|false)\\s*$";
@@ -178,7 +195,6 @@ public class CheckRegularLine {
                 else if(placement.equals(VariablePlacement)){
                     placementType = VariableTypes.getType("otherVar");
                 }
-                isFound = true;
                 break;
             }
         }

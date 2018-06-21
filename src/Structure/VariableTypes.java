@@ -33,4 +33,12 @@ public enum VariableTypes {
             return ERROR;
         }
     }
+
+    public static boolean isVariablesTypeMatch (Variable var1, Variable var2){
+        return var1.getType() == var2.getType();
+    }
+
+    public static boolean isStringMatchVariableType(String str, Variable var){
+        return getType(str) == var.getType();
+    }
 }
