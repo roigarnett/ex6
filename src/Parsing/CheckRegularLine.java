@@ -18,10 +18,16 @@ public class CheckRegularLine {
     static final String OnlyVariableName = "^[a-zA-Z_][a-zA-Z_0-9]*$";
 
 
+    public static void main (String[] args ) throws Exception{
+        Scope scope = new Scope();
+        checkLine(" final String  dsc    = true", scope);
+        scope.printScopeVariables();
+
+    }
+
 
     /**
-     * checks the correctness of a line and if correct saves: name of the variable and it"s type, and the
-     * placement type if it has been placed.
+     * checks the correctness of a line and if correct updates all the variables of the scope.
      * @param line
      * @return
      * @throws Exception
@@ -51,7 +57,7 @@ public class CheckRegularLine {
             lineSegments[0] = data;
         }
 
-        //check each line segment and send update the scope parameters.
+        //check each line segment and update the scope variables.
         for (String seg: lineSegments) {
             seg = regexes.removeWhiteSpaces(seg);
             System.out.println(seg);
@@ -68,20 +74,7 @@ public class CheckRegularLine {
             }
 
         }
-
-
-
         return false;
-
-    }
-
-
-    public static void main (String[] args ) throws Exception{
-        Scope scope = new Scope();
-        checkLine(" final String  dsc    = true, fsdf = ds32233, djdjd = fd327832, fidjfd==dsjf, " +
-                "fjfd=fdks" +
-                ".sdj" +
-                " ", scope);
 
     }
 
@@ -231,7 +224,7 @@ public class CheckRegularLine {
      * @return
      */
     private static String extractVarName(String expression, String name) {
-        Pattern namePattern = Pattern.compile(VariableNameWithPlacement);
+        Pattern namePattern = Pattern.compile(VariableName);
         Matcher nameMatch = namePattern.matcher(expression);
         if(nameMatch.find()){
             name = expression.substring(nameMatch.start(), nameMatch.end());
@@ -278,18 +271,3 @@ public class CheckRegularLine {
     }
 
 }
-
-
-
-
-//    public static boolean findStringInLine (String line, String strToFind, String errorString) throws
-//            Exception{
-//        Pattern p = Pattern.compile(strToFind);
-//        Matcher m = p.matcher(line);
-//        if (m.find()){
-//            return true;
-//        }
-//        else {
-//            throw new Exception(errorString);
-//        }
-//    }
