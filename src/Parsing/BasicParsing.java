@@ -8,24 +8,28 @@ import java.util.regex.Pattern;
 public class BasicParsing {
 
 
-    private static Pattern endLineSemicolon = Pattern.compile(";\\s*$");
-    private static Pattern OpenBracketLine = Pattern.compile("\\{\\s*$");
-    private static Pattern CloseBracketLine = Pattern.compile("^\\s*\\}\\s*$");
+    private static Pattern ENDLINESEMICOLON = Pattern.compile(";\\s*$");
+    private static Pattern OPENBRACKETLINE = Pattern.compile("\\{\\s*$");
+    private static Pattern CLOSEBRACKETLINE = Pattern.compile("^\\s*\\}\\s*$");
 
     private static Pattern VARIABLENAME1 = Pattern.compile("^\\s*[a-zA-Z0-9_]{1,}\\s*$");
     private static Pattern VARIABLENAME2 = Pattern.compile("[a-zA-Z0-9]");
 
-    private static Pattern MethodDecleration = Pattern.compile("^\\s*void\\s{1,}[a-zA-Z]\\S*\\s*\\(.*\\)\\s*\\{\\s*$");
-    private static Pattern Return = Pattern.compile("^\\s*return\\s*$");
+    private static Pattern METHODDECLERATION = Pattern.compile("^\\s*void\\s{1,}[a-zA-Z]\\S*\\s*\\(.*\\)\\s*\\{\\s*$");
+    private static Pattern RETURN = Pattern.compile("^\\s*RETURN\\s*$");
     private static Pattern WHILE = Pattern.compile("^\\s*while\\s*\\(.*\\)\\s*\\{\\s*$");
     private static Pattern IF = Pattern.compile("^\\s*if\\s*\\(.*\\)\\s*\\{\\s*$");
 
-    private static Pattern BasicBooleanExpression = Pattern.compile("(true|false)");
-    private static Pattern BasicNumericExpression = Pattern.compile("^\\s*-{0,1}\\d{1,}(\\.{0,1}\\d{1,}|)\\s*");
-    private static Pattern BasicVariableName = Pattern.compile("^[a-zA-Z]\\S*");
+    private static Pattern BASICBOOLEANEXPRESSION = Pattern.compile("(true|false)");
+    private static Pattern BASICINTEXPRESSION = Pattern.compile("^\\s*-{0,1}\\d{1,}\\s*");
+    private static Pattern BASICDOUBLEEXPRESSION = Pattern.compile("^\\s*-{0,1}\\d{1,}(\\.{0,1}\\d{1,}|)\\s*");
+    private static Pattern BASICSTRINGEXPRESSION = Pattern.compile("^\\s*\".*\"\\s*$");
+    private static Pattern BASICCAHREXPRESSION = Pattern.compile("^\\s*\'.{0,1}\'\\s*$");
+    private static Pattern BASICVARIABLENAME = Pattern.compile("^[a-zA-Z]\\S*");
 
-    private static Pattern CommentLine = Pattern.compile("^//");
-    private static Pattern MethodCall = Pattern.compile("[a-zA-Z]\\S*\\s{0,1}\\(.*\\)$");
+    private static Pattern COMMENTLINE = Pattern.compile("^//");
+    private static Pattern BLANKLINE = Pattern.compile("^\\s*$");
+    private static Pattern METHODCALL = Pattern.compile("[a-zA-Z]\\S*\\s{0,1}\\(.*\\)$");
 
 
     /**
@@ -94,7 +98,7 @@ public class BasicParsing {
      * @return true iff the string starts a new scope
      */
     public static boolean startScope(String data){
-        return genericPatternMatcher(data,OpenBracketLine);
+        return genericPatternMatcher(data,OPENBRACKETLINE);
     }
 
     /**
@@ -102,15 +106,15 @@ public class BasicParsing {
      * @return true iff the string ends a scope
      */
     public static boolean endScope(String data){
-        return genericPatternMatcher(data,CloseBracketLine);
+        return genericPatternMatcher(data,CLOSEBRACKETLINE);
     }
 
     /**
      * @param data a string we want to check
      * @return true iff the string is a decleration on a new method
      */
-    public static boolean MethodDecleration(String data){
-        return genericPatternMatcher(data,MethodDecleration);
+    public static boolean METHODDECLERATION(String data){
+        return genericPatternMatcher(data,METHODDECLERATION);
     }
 
     /**
@@ -125,25 +129,25 @@ public class BasicParsing {
      * @param data a string we want to check
      * @return true iff the line is a comment line
      */
-    public static boolean commentLine(String data){
-        return genericPatternMatcher(data,CommentLine);
+    public static boolean COMMENTLINE(String data){
+        return genericPatternMatcher(data,COMMENTLINE);
     }
 
     /**
      * @param data a string we want to check
      * @return true iff the string is call for a method
      */
-    public static boolean methodCall(String data){
+    public static boolean METHODCALL(String data){
         data = removeWhiteSpaces(data);
-        return genericPatternMatcher(data,MethodCall) && (!startScope(data));
+        return genericPatternMatcher(data,METHODCALL) && (!startScope(data));
     }
 
     /**
      * @param data a string we want to check
-     * @return true iff the string is a return call
+     * @return true iff the string is a RETURN call
      */
-    public static boolean returnCall(String data){
-        return genericPatternMatcher(data,Return);
+    public static boolean RETURNCall(String data){
+        return genericPatternMatcher(data,RETURN);
     }
 
     /**
@@ -154,13 +158,17 @@ public class BasicParsing {
         return genericPatternMatcher(data,VARIABLENAME1) && genericPatternMatcher(data,VARIABLENAME2);
     }
 
+    public static boolean emptyLine(String data){
+        return genericPatternMatcher(data,BLANKLINE);
+    }
+
 
     /**
      * @param data a string representing a method decletration
      * @return the name of the method
      * @throws Exception if the method name is invalid
      */
-    public static String MethodDeclerationName(String data) throws Exception{
+    public static String METHODDECLERATIONName(String data) throws Exception{
         String[] splitted = removeWhiteSpaces(data).split(" ");
         String name = splitted[0];
         if(name.contains("(")){
@@ -178,9 +186,13 @@ public class BasicParsing {
      * @return a list of variables the method gets
      * @throws Exception if one of the variable declerations is invalid
      */
-    public static ArrayList<Variable> MethodDeclerationVars(String data) throws Exception{
-        String[] splitted = dataInBrackets(data).split(",");
+    public static ArrayList<Variable> METHODDECLERATIONVars(String data) throws Exception{
         ArrayList<Variable> vars = new ArrayList<Variable>();
+        data = removeWhiteSpaces(dataInBrackets(data));
+        if(data.equals("")){
+            return vars;
+        }
+        String[] splitted = data.split(",");
         for(int i = 0; i < splitted.length; i++){
             String[] variableData = removeWhiteSpaces(splitted[i]).split(" ");
             boolean isFinal = false;
@@ -232,8 +244,8 @@ public class BasicParsing {
     private static ArrayList<String> conditionTermHelp(String data) throws Exception{
         ArrayList<String> vars = new ArrayList<String>();
         data = removeWhiteSpaces(data);
-        if(genericPatternMatcher(data,BasicBooleanExpression) ||
-                genericPatternMatcher(data,BasicNumericExpression)){
+        if(genericPatternMatcher(data,BASICBOOLEANEXPRESSION) ||
+                genericPatternMatcher(data,BASICDOUBLEEXPRESSION)){
             return vars;
         }
         if(variableName(data)){
@@ -245,7 +257,7 @@ public class BasicParsing {
     }
 
     public static String checkSemicolon(String data) throws Exception{
-        if(!genericPatternMatcher(data,endLineSemicolon)){
+        if(!genericPatternMatcher(data,ENDLINESEMICOLON)){
             throw new Exception("No semicolon at the end of the line");
         }
         data = data.split(";")[0];

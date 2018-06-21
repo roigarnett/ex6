@@ -1,4 +1,4 @@
-package ex6.oop.main;
+package oop.ex6.main;
 import Structure.*;
 import Parsing.*;
 
@@ -6,18 +6,20 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.io.File;
 
-public class SJava {
+public class Sjavac {
 
+    /**
+     * this is the main method which runs the program
+     * @param args the program arguments
+     */
     public static void main(String [] args){
         try{
             File sourceFile = new File(args[0]);
             ArrayList<String> data = extractData(sourceFile);
-            removeEmptyLines(data);
-            removeComments(data);
+            data = removeEmptyLines(data);
+            data = removeComments(data);
             ClassScope scope = ScopeFactory.createClassScope(data);
             CheckScopes.checkClassScope(scope);
             System.out.println("0");
@@ -33,6 +35,11 @@ public class SJava {
 
     }
 
+    /**
+     * @param file the Sjava file
+     * @return a list of Strings representing the text from the file
+     * @throws java.io.IOException if there is any IO problem
+     */
     private static ArrayList<String> extractData(File file) throws java.io.IOException{
         ArrayList<String> data = new ArrayList<String>();
         FileReader fileReader = new FileReader(file);
@@ -46,20 +53,32 @@ public class SJava {
         return data;
     }
 
-    private static void removeEmptyLines(ArrayList<String> data){
+    /**
+     * @param data a list of strings, the content of the file
+     * @return the list without empty lines
+     */
+    private static ArrayList<String> removeEmptyLines(ArrayList<String> data){
+        ArrayList<String> newData = new ArrayList<String>();
         for(String line : data){
-            if(line.equals("")){
-                data.remove(line);
+            if(!BasicParsing.emptyLine(line)){
+                newData.add(line);
             }
         }
+        return newData;
     }
 
-    private static void removeComments(ArrayList<String> data) throws Exception{
+    /**
+     * @param data a list of strings, the content of the file
+     * @return the list without comment lines
+     */
+    private static ArrayList<String> removeComments(ArrayList<String> data){
+        ArrayList<String> newData = new ArrayList<String>();
         for(String line : data){
-            if(BasicParsing.commentLine(line)){
-                data.remove(line);
+            if(!BasicParsing.commentLine(line)){
+                newData.add(line);
             }
         }
+        return newData;
     }
 
 

@@ -63,17 +63,14 @@ public class CheckRegularLine {
         //check each line segment and update the scope variables.
         for (String seg : lineSegments) {
             seg = BasicParsing.removeWhiteSpaces(seg);
-            System.out.println(seg);
             if (!isLegalPlacement(isFinal, seg, lineType, scope)) {
                 if (!isOnlyName(isFinal, seg, lineType, scope)) {
                     throw new Exception("not a placement or a name!!!");
                 }
                 else{
-                    System.out.println(" declared a new var and updated scope vars " );
                 }
             }
             else {
-                System.out.println(" placed a new var and updated scope vars " );
             }
 
         }
@@ -236,7 +233,6 @@ public class CheckRegularLine {
             name = expression.substring(nameMatch.start(), nameMatch.end());
         }
         else {
-            System.out.println("what the f*ck");
         }
         return name;
     }
@@ -265,12 +261,11 @@ public class CheckRegularLine {
                 }
                 placementType = placementVar.getType();
             }
-            System.out.println(onlyPlacement);
             if (placementType == null) {
                 throw new Exception("bad placement of variable!!");
             }
-        } else {
-            System.out.println("what the f*ck");
+        }
+        else {
         }
 
         return placementType;

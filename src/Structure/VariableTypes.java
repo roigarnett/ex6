@@ -27,7 +27,7 @@ public enum VariableTypes {
             return OTHER_VAR;
         }
         else{
-            throw new Exception("Unrecognized variable type at method decleration");
+            throw new Exception("Unrecognized variable type");
         }
     }
 
@@ -40,7 +40,7 @@ public enum VariableTypes {
     }
 
     public static boolean isPlacementPossible(VariableTypes nameType, VariableTypes placementType){
-        return (nameType==placementType || (nameType==INT && placementType==DOUBLE) || (nameType==STRING &&
+        return (nameType==placementType || (nameType==DOUBLE && placementType==INT) || (nameType==STRING &&
                 placementType==CHAR) || (nameType==BOOLEAN && placementType==DOUBLE)
                 || (nameType==BOOLEAN && placementType==INT));
     }
