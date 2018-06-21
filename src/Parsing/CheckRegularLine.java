@@ -20,7 +20,9 @@ public class CheckRegularLine {
 
     public static void main (String[] args ) throws Exception{
         Scope scope = new Scope();
-        checkLine(" final boolean  dsc    = true", scope);
+        checkLine("  final String  dsc    = true, dsjsd = sdius", scope);
+        checkLine("int jsd = 212, dsjc = 2617, hoenc", scope);
+        checkLine("String skdsd = ", scope);
         scope.printScopeVariables();
 
     }
@@ -168,6 +170,9 @@ public class CheckRegularLine {
             }
             else if (!VariableTypes.isPlacementPossible(varInScope.getType(), placementType)){
                 throw new Exception("variable type and placement type do not match");
+            }
+            else{
+                varInScope.initialize();
             }
         }
         return true;

@@ -52,10 +52,15 @@ public class Variable {
     }
 
     /**
-     * Initialize the variable.
+     * initialize the variable if possible (=the variable is not final).
+     * @throws Exception if the variable is final.
      */
-    public void initialize() {
+    public void initialize() throws Exception {
+        if(isFinal){
+            throw new Exception("can't change a final Variable");
+        }
         this.initialized = true;
+
     }
 
     public String getName() {
@@ -76,6 +81,6 @@ public class Variable {
         if (isInitialized()) {
             varString = varString + " initialized";
         }
-        return varString;
+        return varString + " ";
     }
 }
