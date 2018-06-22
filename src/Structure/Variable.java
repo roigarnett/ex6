@@ -39,9 +39,16 @@ public class Variable {
         this.name = name;
         this.isFinal = isFinal;
         if(isFinal){
-            throw new Exception("Variable can't be initialized because it is final");
+            throw new Exception("Variable can't be initialized with no value because it is final");
         }
 
+    }
+
+    public Variable (Variable var){
+        this.type = var.type;
+        this.name = var.name;
+        this.isFinal = var.isFinal;
+        this.initialized = var.initialized;
     }
 
     /**
@@ -56,7 +63,7 @@ public class Variable {
      * @throws Exception if the variable is final.
      */
     public void initialize() throws Exception {
-        if(isFinal){
+        if(isFinal && this.initialized){
             throw new Exception("can't change a final Variable");
         }
         this.initialized = true;

@@ -4,6 +4,7 @@ import Structure.Scope;
 import Structure.Variable;
 import Structure.VariableTypes;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,7 @@ public class CheckRegularLine {
      * @return
      * @throws Exception
      */
-    static boolean checkLine(String line, Scope scope) throws Exception{
+    static void checkLine(String line, Scope scope) throws Exception{
         boolean isFinal;
         VariableTypes lineType = null;
         VariableTypes placementType = null;
@@ -43,7 +44,7 @@ public class CheckRegularLine {
         lineType = isDeclaration(data);
         if (lineType!=null){
             data = BasicParsing.removeDecleration(data);
-            lineSegments = data.split(",");
+            lineSegments = BasicParsing.addSpace(data).split(",");
         }
         else {
             lineSegments = new String[1];
@@ -53,14 +54,12 @@ public class CheckRegularLine {
         //check each line segment and update the scope variables.
         for (String seg : lineSegments) {
             seg = BasicParsing.removeWhiteSpaces(seg);
-            if (!isLegalPlacement(isFinal, seg, lineType, scope)) {
-                isOnlyName(isFinal, seg, lineType, scope);
-            }
-            else {
+            boolean isInitialized = isPlacement(isFinal, seg, lineType, scope);
+
+            if(lineType != null){
+                addVariable(isFinal, seg, lineType, scope, isInitialized);
             }
         }
-        return false;
-
     }
 
 
@@ -73,132 +72,71 @@ public class CheckRegularLine {
         return type;
     }
 
-
-    private static VariableTypes checkPlacement(String line) throws Exception{
-        VariableTypes placementType = null;
-        String IntPlacement = "^\\s*\\d*\\s*$";
-        String StringPlacement = "^\\s*\\w*\\s*$";
-        String BOOLEANPlacement = "^\\s*(true|false)\\s*$";
-        String FLOATorDOUBLEPlacement = "^\\s*\\d{1,}\\.\\d{1,}\\s*$";
-        String VariablePlacement = "^\\s*[a-zA-Z]\\S*\\s*$";
-
-        String[] placements = {IntPlacement, StringPlacement, BOOLEANPlacement, FLOATorDOUBLEPlacement,
-                VariablePlacement};
-
-        for (String placement: placements){
-            Pattern p = Pattern.compile(placement);
-            Matcher m = p.matcher(line);
-            if (m.find()){
-                if(placement.equals(IntPlacement)){
-                    placementType = VariableTypes.getType("int");
-                }
-                else if(placement.equals(StringPlacement)){
-                    placementType = VariableTypes.getType("String");
-                }
-                else if(placement.equals(BOOLEANPlacement)){
-                    placementType = VariableTypes.getType("boolean");
-                }
-                else if(placement.equals(FLOATorDOUBLEPlacement)){
-                    placementType = VariableTypes.getType("floatOrDouble");
-                }
-                else if(placement.equals(VariablePlacement)){
-                    placementType = VariableTypes.getType("otherVar");
-                }
-                break;
-            }
-        }
-        return placementType;
-
-    }
-
-
-    private static boolean checkNameAndPlacementsTypes(boolean isFinal, VariableTypes lineType, String
-            name, VariableTypes placementType, Scope scope)  throws Exception {
-
-        Variable varInScope = scope.getVariableFromName(name);
-        //no variable with such name in scope
-        if(varInScope==null){
-            if(lineType!=null){
-                if(!VariableTypes.isPlacementPossible(lineType, placementType)){
-                    throw new Exception("variable type and placement type do not match");
-                }
-                else{
-                    scope.addVariable(new Variable(lineType, name, isFinal, true));
-                    return true;
-                }
-
-            }
-            else {
-                throw new Exception("var does not exist!!");
-            }
-        }
-
-        //there is another variable with this name in this scope.
-        else {
-
-            if(lineType!=null){
-                throw new Exception("you cant declare a variable that's already been declared");
-            }
-            else if (!VariableTypes.isPlacementPossible(varInScope.getType(), placementType)){
-                throw new Exception("variable type and placement type do not match");
-            }
-            else{
-                varInScope.initialize();
-            }
-        }
-        return true;
-    }
-
-
-    private static void isOnlyName(boolean isFinal, String expression, VariableTypes lineType, Scope
-            scope) throws Exception {
-        String name = BasicParsing.removeWhiteSpaces(expression);
-        if (lineType==null){
-            throw new Exception("there is no meaning for the line");
-        }
-        else {
-            scope.addVariable(new Variable(lineType, name, isFinal));
-        }
-    }
-
     /**
      * Checks if a given lin is a placement and if so updates the type of the placed value.
      * @param line the given line
      * @return true iff it is a good placement
      * @throws Exception if it is a wrong placement
      */
-    private static boolean isLegalPlacement(boolean isFinal, String line, VariableTypes lineType, Scope
+    private static boolean isPlacement(boolean isFinal, String line, VariableTypes lineType, Scope
             scope ) throws Exception{
+
+        String name = BasicParsing.getName(line);
+        checkName(name,lineType,scope);
 
         boolean isPlacment = BasicParsing.isPlacment(line);
 
         if(isPlacment){
             VariableTypes placementType = extractPlacementType(line, scope);
-            String name = BasicParsing.getName(line);
-            checkNameAndPlacementsTypes(isFinal, lineType, name, placementType, scope);
+            checkPlacementsTypes(isFinal, lineType, name, placementType, scope);
             return true;
+        }
+        else if(lineType == null){
+            throw new Exception("untill whennnnnnnnnnn?");
         }
 
         return false;
 
     }
 
-    /**
-     * extracts the variable name from a given expression
-     * @param expression
-     * @param name
-     * @return
-     */
-//    private static String extractVarName(String expression) throws Exception {
-//        Pattern namePattern = Pattern.compile(VariableName);
-//        Matcher nameMatch = namePattern.matcher(expression);
-//        if(nameMatch.find()){
-//            String name = expression.substring(nameMatch.start(), nameMatch.end());
-//            return name;
-//        }
-//        throw new Exception("bad variable name");
-//
-//    }
+    private static void checkName(String name, VariableTypes lineType, Scope scope) throws Exception{
+        if(lineType != null){
+            if(!BasicParsing.variableName(name)){
+                throw new Exception("illegal variable name");
+            }
+            if(!scope.variableNameValid(name)){
+                throw new Exception("variable name already exists");
+            }
+        }
+        else{
+
+        }
+
+    }
+
+    private static void checkPlacementsTypes(boolean isFinal, VariableTypes lineType, String
+            name, VariableTypes placementType, Scope scope)  throws Exception {
+
+        if(lineType != null){
+            if(!VariableTypes.isPlacementPossible(lineType, placementType)){
+                throw new Exception("variable type and placement type do not match");
+            }
+            else{
+                scope.addVariable(new Variable(lineType, name, isFinal, true));
+            }
+        }
+        else{
+            Variable var = scope.getVariableFromName(name);
+            VariableTypes type = var.getType();
+            if(!VariableTypes.isPlacementPossible(type, placementType)){
+                throw new Exception("variable type and placement type do not match");
+            }
+            else{
+                var.initialize();
+            }
+        }
+    }
+
 
     /**
      * extarct placement type from expression
@@ -217,13 +155,28 @@ public class CheckRegularLine {
             if (placementVar == null) {
                 throw new Exception("placement variable does not exist");
             }
+            if(!placementVar.isInitialized()){
+                throw new Exception("placement variable is not initialized");
+            }
             placementType = placementVar.getType();
         }
         if (placementType == null) {
-            throw new Exception("bad placement of variable!!");
+            throw new Exception("bad placement of variable");
         }
         return placementType;
 
+    }
+
+
+    private static void addVariable(boolean isFinal, String expression, VariableTypes lineType, Scope
+            scope, boolean isInitialized) throws Exception {
+        String name = BasicParsing.removeWhiteSpaces(expression);
+        if (lineType==null){
+            throw new Exception("there is no meaning for the line");
+        }
+        else {
+            scope.addVariable(new Variable(lineType, name, isFinal, isInitialized));
+        }
     }
 
 }

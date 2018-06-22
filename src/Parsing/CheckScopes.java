@@ -25,7 +25,10 @@ public class CheckScopes {
     }
 
     private static void checkMethodScope(MethodScope scope) throws Exception{
-        scope.getGlobalVariables().addAll(scope.getFather().getVariables());
+        ArrayList<Variable> globalVars = scope.getFather().getVariables();
+        for(Variable var : globalVars){
+            scope.getGlobalVariables().add(new Variable(var));
+        }
         MethodDeclaration md = checkMethodDecleration(scope.getLines().get(0).getContent());
         for(Variable var : (md.getArgs())){
             scope.addVariable(var);

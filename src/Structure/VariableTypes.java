@@ -40,8 +40,8 @@ public enum VariableTypes {
     }
 
     public static boolean isPlacementPossible(VariableTypes nameType, VariableTypes placementType){
-        return (nameType==placementType || (nameType==DOUBLE && placementType==INT) || (nameType==STRING &&
-                placementType==CHAR) || (nameType==BOOLEAN && placementType==DOUBLE)
+        return (nameType==placementType || (nameType==DOUBLE && placementType==INT)
+                || (nameType==BOOLEAN && placementType==DOUBLE)
                 || (nameType==BOOLEAN && placementType==INT));
     }
 }

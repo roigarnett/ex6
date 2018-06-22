@@ -23,11 +23,17 @@ public class BasicParsing {
     private static Pattern WHILE = Pattern.compile("^\\s*while\\s*\\(.*\\)\\s*\\{\\s*$");
     private static Pattern IF = Pattern.compile("^\\s*if\\s*\\(.*\\)\\s*\\{\\s*$");
 
-    private static Pattern BASICBOOLEANEXPRESSION = Pattern.compile("(^\\s*true\\s*$|^\\s*false\\s*$)");
-    private static Pattern BASICINTEXPRESSION = Pattern.compile("\\s*-{0,1}\\d{1,}\\s*");
-    private static Pattern BASICDOUBLEEXPRESSION = Pattern.compile("\\s*-{0,1}\\d{1,}\\.\\d{1,}\\s*");
-    private static Pattern BASICSTRINGEXPRESSION = Pattern.compile("^\\s*\".*\"\\s*$");
-    private static Pattern BASICCAHREXPRESSION = Pattern.compile("^\\s*\'.{0,1}\'\\s*$");
+    private static Pattern BASICBOOLEANEXPRESSION =
+            Pattern.compile("(^\\s*true\\s*$|^\\s*false\\s*$)");
+    private static Pattern BASICINTEXPRESSION =
+            Pattern.compile("(^|\\s)\\s*-{0,1}\\d{1,}\\s*($|\\s)");
+    private static Pattern BASICDOUBLEEXPRESSION =
+            Pattern.compile("(^|\\s)\\s*-{0,1}\\d{1,}\\.\\d{1,}\\s*($|\\s)");
+    private static Pattern BASICSTRINGEXPRESSION =
+            Pattern.compile("(^|\\s)\\s*\".*\"\\s*($|\\s)");
+    private static Pattern BASICCAHREXPRESSION =
+            Pattern.compile("(^|\\s)\\s*\'.{0,1}\'\\s*($|\\s)");
+    private static Pattern SPACEINMIDDLE = Pattern.compile("\\S\\s{1,}\\S");
 
     private static Pattern COMMENTLINE = Pattern.compile("^//");
     private static Pattern BLANKLINE = Pattern.compile("^\\s*$");
@@ -85,7 +91,7 @@ public class BasicParsing {
         String[] splitted = dataWithSpaces.split(" ");
         String resultString = "";
         for(String word : splitted){
-            if(!word.equals("")){
+            if(!(word.equals("")||word.equals("\t"))){
                 resultString += " " + word;
             }
         }
@@ -182,7 +188,8 @@ public class BasicParsing {
      * @return true if the string can represent a boolean value
      */
     public static boolean basicBooleanExpression(String data){
-        return genericPatternMatcher(data,BASICBOOLEANEXPRESSION);
+        return genericPatternMatcher(data,BASICBOOLEANEXPRESSION) &&
+                !genericPatternMatcher(data,SPACEINMIDDLE);
     }
 
     /**
@@ -190,7 +197,8 @@ public class BasicParsing {
      * @return true if the string can represent a int value
      */
     public static boolean basicIntExpression(String data){
-        return genericPatternMatcher(data,BASICINTEXPRESSION);
+        return genericPatternMatcher(data,BASICINTEXPRESSION) &&
+                !genericPatternMatcher(data,SPACEINMIDDLE);
     }
 
     /**
@@ -198,7 +206,8 @@ public class BasicParsing {
      * @return true if the string can represent an souble value
      */
     public static boolean basicDoubleExpression(String data){
-        return genericPatternMatcher(data,BASICDOUBLEEXPRESSION);
+        return genericPatternMatcher(data,BASICDOUBLEEXPRESSION) &&
+                !genericPatternMatcher(data,SPACEINMIDDLE);
     }
 
     /**
@@ -214,7 +223,8 @@ public class BasicParsing {
      * @return true if the string can represent a char value
      */
     public static boolean basicCharExpression(String data){
-        return genericPatternMatcher(data,BASICCAHREXPRESSION);
+        return genericPatternMatcher(data,BASICCAHREXPRESSION) &&
+                !genericPatternMatcher(data,SPACEINMIDDLE);
     }
 
     /**
@@ -245,7 +255,7 @@ public class BasicParsing {
      * @throws Exception if the method name is invalid
      */
     public static String methodDeclerationName(String data) throws Exception{
-        String[] splitted = removeWhiteSpaces(data).split(" ");
+        String[] splitted = removeWhiteSpaces(data).split("\\(");
         String name = splitted[0];
         if(name.contains("(")){
             return (name.split("\\("))[0];
@@ -342,7 +352,7 @@ public class BasicParsing {
         if(!genericPatternMatcher(data,ENDLINESEMICOLON)){
             throw new Exception("No semicolon at the end of the line");
         }
-        String[] splitted = data.split(";");
+        String[] splitted = removeWhiteSpaces(data).split(";");
         if(splitted.length > 1){
             throw new Exception("can't have more than one semicolon");
         }
@@ -362,6 +372,7 @@ public class BasicParsing {
     }
 
     public static VariableTypes getType(String data){
+        data = removeWhiteSpaces(data);
         if(basicIntExpression(data)){
             return VariableTypes.INT;
         }
@@ -458,6 +469,10 @@ public class BasicParsing {
             names.add(var);
         }
         return names;
+    }
+
+    public static String addSpace(String data){
+        return data + " ";
     }
 
     public static void main (String[] args ) throws Exception{
