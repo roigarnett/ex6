@@ -12,6 +12,7 @@ public class CheckScopes {
             if(line.getScope() != null){
                 MethodDeclaration md = scope.getMethodDeclarations().get(methodDeclarationNum);
                 md.update(checkMethodDecleration(data));
+                methodDeclarationNum += 1;
             }
             else{
                 data = BasicParsing.checkSemicolon(data);
@@ -26,7 +27,9 @@ public class CheckScopes {
     private static void checkMethodScope(MethodScope scope) throws Exception{
         scope.getGlobalVariables().addAll(scope.getFather().getVariables());
         MethodDeclaration md = checkMethodDecleration(scope.getLines().get(0).getContent());
-        scope.getVariables().addAll(md.getArgs());
+        for(Variable var : (md.getArgs())){
+            scope.addVariable(var);
+        }
         int scopeLength = scope.getLines().size();
         for(int i = 1; i < scopeLength - 2; i ++){
             Line line = scope.getLines().get(i);
@@ -40,7 +43,7 @@ public class CheckScopes {
                 if(BasicParsing.methodCall(data)){
                     checkMethodCall.check(data,scope);
                 }
-                else {
+                else if(!BasicParsing.returnCall(data)){
                     CheckRegularLine.checkLine(data, scope);
                 }
             }
@@ -72,7 +75,7 @@ public class CheckScopes {
                 if(BasicParsing.methodCall(data)){
                     checkMethodCall.check(data,scope);
                 }
-                else {
+                else if(!BasicParsing.returnCall(data)){
                     CheckRegularLine.checkLine(data, scope);
                 }
             }
@@ -84,11 +87,12 @@ public class CheckScopes {
     }
 
     private static MethodDeclaration checkMethodDecleration(String data) throws Exception{
-        if(!BasicParsing.MethodDecleration(data)){
+        if(!BasicParsing.methodDecleration(data)){
             throw new Exception();
         }
-        String name = BasicParsing.MethodDeclerationName(data);
-        ArrayList<Variable> vars = BasicParsing.MethodDeclerationVars(data);
+        data = BasicParsing.methodDeclerationData(data);
+        String name = BasicParsing.methodDeclerationName(data);
+        ArrayList<Variable> vars = BasicParsing.methodDeclerationVars(data);
         return new MethodDeclaration(name,vars);
     }
 

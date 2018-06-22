@@ -97,4 +97,15 @@ public class Scope {
         }
         return (ClassScope)currentScope;
     }
+
+    public int getScopeLines(){
+        int number = 0;
+        for(Line line : this.lines){
+            number += 1;
+            if(line.getScope() != null){
+                number += line.getScope().getScopeLines() - 1;
+            }
+        }
+        return number;
+    }
 }

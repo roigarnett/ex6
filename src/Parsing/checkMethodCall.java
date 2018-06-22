@@ -9,20 +9,24 @@ public class checkMethodCall {
         if(!BasicParsing.methodCall(data)){
             throw new Exception();
         }
-        String name = BasicParsing.MethodDeclerationName(data);
+        String name = BasicParsing.methodDeclerationName(data);
         ArrayList<Variable> originalVars = scope.getClassScope().getMethodFromName(name).getArgs();
-        ArrayList<Variable> calledVars = BasicParsing.MethodDeclerationVars(data);
+        ArrayList<VariableTypes> calledVars = BasicParsing.methodCallVars(data);
+        ArrayList<String> calledVarsNames = BasicParsing.methodCallNames(data);
         if(originalVars.size() != calledVars.size()){
             throw new Exception();
         }
         for(int i = 0; i < originalVars.size(); i++){
             Variable orgVar = originalVars.get(i);
-            Variable callVar = calledVars.get(i);
-            if(!VariableTypes.isPlacementPossible(orgVar.getType(),callVar.getType())){
-                throw new Exception();
+            VariableTypes callType = calledVars.get(i);
+            if(callType.equals(VariableTypes.OTHER_VAR)){
+                Variable callVar = scope.getVariableFromName(calledVarsNames.get(i));
+                if(callVar == null || !callVar.isInitialized()){
+                    throw new Exception("called variable is not ininitializd");
+                }
+                callType = callVar.getType();
             }
-            Variable var = scope.getVariableFromName(callVar.getName());
-            if(var == null){
+            if(!VariableTypes.isPlacementPossible(orgVar.getType(),callType)){
                 throw new Exception();
             }
         }

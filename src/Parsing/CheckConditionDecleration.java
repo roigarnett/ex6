@@ -12,7 +12,7 @@ public class CheckConditionDecleration {
         ArrayList<String> booleanVariables = BasicParsing.conditionTerm(data);
         for(String varName : booleanVariables){
             Variable var = scope.getVariableFromName(varName);
-            if(var == null){
+            if(var == null || !var.isInitialized()){
                 throw new Exception();
             }
             if(!VariableTypes.isPlacementPossible(VariableTypes.BOOLEAN,var.getType())){

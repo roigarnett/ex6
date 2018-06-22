@@ -20,7 +20,7 @@ public class ScopeFactory {
                 MethodScope innerscope = createMethodScope(trimList(data,i),scope);
                 scope.addLine(new Line(line,innerscope));
                 scope.addMethodDecleration(new MethodDeclaration(innerscope));
-                i = i + innerscope.getLines().size() - 1;
+                i = i + innerscope.getScopeLines() - 1;
             }
             else{
                 scope.addLine(new Line(line));
@@ -43,7 +43,7 @@ public class ScopeFactory {
             if(BasicParsing.startScope(line)){
                 Scope innerscope = createConditionScope(trimList(data,i),scope);
                 scope.addLine(new Line(line,innerscope));
-                i = i + innerscope.getLines().size() - 2;
+                i = i + innerscope.getScopeLines() - 1;
             }
             else if(BasicParsing.endScope(line)){
                 scope.addLine(new Line(line));
@@ -70,7 +70,7 @@ public class ScopeFactory {
             if(BasicParsing.startScope(line)){
                 Scope innerscope = createConditionScope(trimList(data,i),scope);
                 scope.addLine(new Line(line,innerscope));
-                i = i + innerscope.getLines().size() - 2;
+                i = i + innerscope.getScopeLines() - 1;
             }
             else if(BasicParsing.endScope(line)){
                 scope.addLine(new Line(line));
@@ -89,9 +89,10 @@ public class ScopeFactory {
      * @return the list withouts the data in indexes 0 - index
      */
     private static ArrayList<String> trimList(ArrayList<String> data, int index){
+        ArrayList<String> newList = new ArrayList<>(data);
         for(int i = index - 1; i >= 0; i--){
-            data.remove(i);
+            newList.remove(i);
         }
-        return data;
+        return newList;
     }
 }

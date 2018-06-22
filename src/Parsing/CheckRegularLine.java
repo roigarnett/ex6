@@ -9,14 +9,6 @@ import java.util.regex.Pattern;
 
 public class CheckRegularLine {
 
-    static final String semicolonEnd = "(;+\\s*)$";
-    static final String startFinal = "^\\s*final\\s";
-    static final String declarationString = "^(int|String|boolean|double|float)\\s";
-    static final String fullPlacement = "^[a-zA-Z]\\S*\\s*=\\s*\\S*\\s*$";
-    static final String VariableNameWithPlacement = "^[a-zA-Z_][a-zA-Z_0-9]*\\s*=";
-    static final String VariableName = "^[a-zA-Z_][a-zA-Z_0-9]*";
-    static final String OnlyVariableName = "^[a-zA-Z_][a-zA-Z_0-9]*$";
-
 
     public static void main (String[] args ) throws Exception{
         Scope scope = new Scope();
@@ -40,19 +32,17 @@ public class CheckRegularLine {
         VariableTypes lineType = null;
         VariableTypes placementType = null;
         String name = null;
-        boolean isInitialized = false;
 
-        int b;
         String data = BasicParsing.removeWhiteSpaces(line);
-        isFinal = startsWithFinal(data);
+        isFinal = BasicParsing.isFinal(data);
         if (isFinal){
-            data = data.split(startFinal)[1];
+            data = BasicParsing.removeFinal(data);
         }
 
         String[] lineSegments;
         lineType = isDeclaration(data);
         if (lineType!=null){
-            data = data.split(declarationString)[1];
+            data = BasicParsing.removeDecleration(data);
             lineSegments = data.split(",");
         }
         else {
@@ -64,38 +54,21 @@ public class CheckRegularLine {
         for (String seg : lineSegments) {
             seg = BasicParsing.removeWhiteSpaces(seg);
             if (!isLegalPlacement(isFinal, seg, lineType, scope)) {
-                if (!isOnlyName(isFinal, seg, lineType, scope)) {
-                    throw new Exception("not a placement or a name!!!");
-                }
-                else{
-                }
+                isOnlyName(isFinal, seg, lineType, scope);
             }
             else {
             }
-
         }
         return false;
 
     }
 
 
-    private static boolean startsWithFinal(String line) {
-
-        Pattern p = Pattern.compile(startFinal);
-        Matcher m = p.matcher(line);
-        return m.find();
-    }
-
-
     private static VariableTypes isDeclaration(String line) throws Exception{
         VariableTypes type = null;
-        Pattern p = Pattern.compile(declarationString);
-        Matcher m = p.matcher(line);
-        String typeString;
-        boolean isDeclare = m.find();
+        boolean isDeclare = BasicParsing.isDecleration(line);
         if(isDeclare){
-            typeString = line.substring(m.start(), m.end()-1);
-            type = VariableTypes.getType(typeString);
+            type = BasicParsing.declerationType(line);
         }
         return type;
     }
@@ -177,25 +150,15 @@ public class CheckRegularLine {
     }
 
 
-    private static boolean isOnlyName(boolean isFinal, String expression, VariableTypes lineType, Scope
+    private static void isOnlyName(boolean isFinal, String expression, VariableTypes lineType, Scope
             scope) throws Exception {
-        String name;
-        Pattern p = Pattern.compile(OnlyVariableName);
-        Matcher m = p.matcher(expression);
-        boolean isName = m.find();
-        if (isName) {
-            name = expression;
-        }
-        else {
-            throw new Exception("not a valid name for var");
-        }
+        String name = BasicParsing.removeWhiteSpaces(expression);
         if (lineType==null){
             throw new Exception("there is no meaning for the line");
         }
         else {
             scope.addVariable(new Variable(lineType, name, isFinal));
         }
-        return isName;
     }
 
     /**
@@ -207,17 +170,17 @@ public class CheckRegularLine {
     private static boolean isLegalPlacement(boolean isFinal, String line, VariableTypes lineType, Scope
             scope ) throws Exception{
 
-        Pattern p = Pattern.compile(fullPlacement);
-        Matcher m = p.matcher(line);
+        boolean isPlacment = BasicParsing.isPlacment(line);
 
-        if(m.find()){
-            String name = null;
+        if(isPlacment){
             VariableTypes placementType = extractPlacementType(line, scope);
-            name = extractVarName(line, name);
+            String name = BasicParsing.getName(line);
             checkNameAndPlacementsTypes(isFinal, lineType, name, placementType, scope);
             return true;
         }
+
         return false;
+
     }
 
     /**
@@ -226,16 +189,16 @@ public class CheckRegularLine {
      * @param name
      * @return
      */
-    private static String extractVarName(String expression, String name) {
-        Pattern namePattern = Pattern.compile(VariableName);
-        Matcher nameMatch = namePattern.matcher(expression);
-        if(nameMatch.find()){
-            name = expression.substring(nameMatch.start(), nameMatch.end());
-        }
-        else {
-        }
-        return name;
-    }
+//    private static String extractVarName(String expression) throws Exception {
+//        Pattern namePattern = Pattern.compile(VariableName);
+//        Matcher nameMatch = namePattern.matcher(expression);
+//        if(nameMatch.find()){
+//            String name = expression.substring(nameMatch.start(), nameMatch.end());
+//            return name;
+//        }
+//        throw new Exception("bad variable name");
+//
+//    }
 
     /**
      * extarct placement type from expression
@@ -246,29 +209,21 @@ public class CheckRegularLine {
      * recognized
      */
     private static VariableTypes extractPlacementType(String expression, Scope scope) throws Exception{
-        String onlyPlacement;
-        VariableTypes placementType = null;
-        Pattern nameAndEqualsPattern = Pattern.compile(VariableNameWithPlacement);
-        Matcher nameAndEqualsMatch = nameAndEqualsPattern.matcher(expression);
-        if (nameAndEqualsMatch.find()) {
-            onlyPlacement = expression.split(VariableNameWithPlacement)[1];
-            onlyPlacement = BasicParsing.removeWhiteSpaces(onlyPlacement);
-            placementType = checkPlacement(onlyPlacement);
-            if (placementType == VariableTypes.OTHER_VAR) {
-                Variable placementVar = scope.getVariableFromName(onlyPlacement);
-                if (placementVar == null) {
-                    throw new Exception("placement variable does not exist");
-                }
-                placementType = placementVar.getType();
+        expression = BasicParsing.removeWhiteSpaces(expression);
+        VariableTypes placementType = BasicParsing.placmentType(expression);
+        if (placementType == VariableTypes.OTHER_VAR) {
+            String otherVarName = BasicParsing.getVariablePlacmentName(expression);
+            Variable placementVar = scope.getVariableFromName(otherVarName);
+            if (placementVar == null) {
+                throw new Exception("placement variable does not exist");
             }
-            if (placementType == null) {
-                throw new Exception("bad placement of variable!!");
-            }
+            placementType = placementVar.getType();
         }
-        else {
+        if (placementType == null) {
+            throw new Exception("bad placement of variable!!");
         }
-
         return placementType;
+
     }
 
 }
