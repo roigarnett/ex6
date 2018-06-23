@@ -5,47 +5,58 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A class that responsible for simple checking and parsing of line parts.
+ */
 public class BasicParsing {
 
-    private static Pattern EMPTYBRACKETS = Pattern.compile("^.*\\(\\s*\\).*$");
+    //patterns regarding the folding of line: brackets, semicolon and curled brackets.
+    private static Pattern EMPTY_BRACKETS = Pattern.compile("^.*\\(\\s*\\).*$");
+    private static Pattern ENDLINE_SEMICOLON = Pattern.compile(";\\s*$");
+    private static Pattern OPEN_BRACKET_LINE = Pattern.compile("\\{\\s*$");
+    private static Pattern CLOSE_BRACKET_LINE = Pattern.compile("^\\s*\\}\\s*$");
 
-    private static Pattern ENDLINESEMICOLON = Pattern.compile(";\\s*$");
-    private static Pattern OPENBRACKETLINE = Pattern.compile("\\{\\s*$");
-    private static Pattern CLOSEBRACKETLINE = Pattern.compile("^\\s*\\}\\s*$");
-
+    //patterns regarding use and declaration of a variable name.
     private static Pattern VARIABLENAME1 = Pattern.compile("^\\s*[a-zA-Z][a-zA-Z0-9_]*\\s*$");
     private static Pattern VARIABLENAME2 = Pattern.compile("^\\s*[_][a-zA-Z0-9_]{1,}\\s*$");
     private static Pattern FINAL = Pattern.compile("^\\s*final\\s");
     private static Pattern DECLERATION = Pattern.compile("^(int|String|boolean|double|char)\\s");
 
+    //patterns regarding condition, method declarations and calls skeleton.
     private static Pattern METHODDECLERATION = Pattern.compile("^\\s*void\\s{1,}[a-zA-Z]\\S*\\s*\\(.*\\)\\s*\\{\\s*$");
-    private static Pattern RETURN = Pattern.compile("^\\s*return\\s*$");
     private static Pattern WHILE = Pattern.compile("^\\s*while\\s*\\(.*\\)\\s*\\{\\s*$");
     private static Pattern IF = Pattern.compile("^\\s*if\\s*\\(.*\\)\\s*\\{\\s*$");
+    private static Pattern METHOD_CALL = Pattern.compile("[a-zA-Z]\\S*\\s{0,1}\\(.*\\)$");
 
-    private static Pattern BASICBOOLEANEXPRESSION =
+    //pattern that checks a return statement.
+    private static Pattern RETURN = Pattern.compile("^\\s*return\\s*$");
+
+    //patterns regarding the correctness of a placement.
+    private static Pattern BASIC_BOOLEAN_EXPRESSION =
             Pattern.compile("(^\\s*true\\s*$|^\\s*false\\s*$)");
-    private static Pattern BASICINTEXPRESSION =
+    private static Pattern BASIC_INT_EXPRESSION =
             Pattern.compile("(^|\\s)\\s*-{0,1}\\d{1,}\\s*($|\\s)");
-    private static Pattern BASICDOUBLEEXPRESSION =
+    private static Pattern BASIC_DOUBLE_EXPRESSION =
             Pattern.compile("(^|\\s)\\s*-{0,1}\\d{1,}\\.\\d{1,}\\s*($|\\s)");
-    private static Pattern BASICSTRINGEXPRESSION =
+    private static Pattern BASIC_STRING_EXPRESSION =
             Pattern.compile("(^|\\s)\\s*\".*\"\\s*($|\\s)");
-    private static Pattern BASICCAHREXPRESSION =
+    private static Pattern BASIC_CHAR_EXPRESSION =
             Pattern.compile("(^|\\s)\\s*\'.{0,1}\'\\s*($|\\s)");
-    private static Pattern SPACEINMIDDLE = Pattern.compile("\\S\\s{1,}\\S");
 
-    private static Pattern COMMENTLINE = Pattern.compile("^//");
-    private static Pattern BLANKLINE = Pattern.compile("^\\s*$");
-    private static Pattern METHODCALL = Pattern.compile("[a-zA-Z]\\S*\\s{0,1}\\(.*\\)$");
+    // patterns regarding strings we would want to ignore from.
+    private static Pattern SPACE_IN_MIDDLE = Pattern.compile("\\S\\s{1,}\\S");
+    private static Pattern COMMENT_LINE = Pattern.compile("^//");
+    private static Pattern BLANK_LINE = Pattern.compile("^\\s*$");
+
 
 
     /**
      * @param dataWithBrackets a string containing brackets
      * @return the characters inside the brackets
+     * @throws Exception if there to many brackets in one line.
      */
     private static String dataInBrackets(String dataWithBrackets) throws Exception{
-        if (genericPatternMatcher(dataWithBrackets,EMPTYBRACKETS)){
+        if (genericPatternMatcher(dataWithBrackets, EMPTY_BRACKETS)){
             return "";
         }
         String[] splitted = dataWithBrackets.split("\\(");
@@ -115,7 +126,7 @@ public class BasicParsing {
      * @return true iff the string starts a new scope
      */
     public static boolean startScope(String data){
-        return genericPatternMatcher(data,OPENBRACKETLINE);
+        return genericPatternMatcher(data, OPEN_BRACKET_LINE);
     }
 
     /**
@@ -123,7 +134,7 @@ public class BasicParsing {
      * @return true iff the string ends a scope
      */
     public static boolean endScope(String data){
-        return genericPatternMatcher(data,CLOSEBRACKETLINE);
+        return genericPatternMatcher(data, CLOSE_BRACKET_LINE);
     }
 
     /**
@@ -147,7 +158,7 @@ public class BasicParsing {
      * @return true iff the line is a comment line
      */
     public static boolean commentLine(String data){
-        return genericPatternMatcher(data,COMMENTLINE);
+        return genericPatternMatcher(data, COMMENT_LINE);
     }
 
     /**
@@ -156,7 +167,7 @@ public class BasicParsing {
      */
     public static boolean methodCall(String data){
         data = removeWhiteSpaces(data);
-        return genericPatternMatcher(data,METHODCALL) && (!startScope(data));
+        return genericPatternMatcher(data, METHOD_CALL) && (!startScope(data));
     }
 
     /**
@@ -180,7 +191,7 @@ public class BasicParsing {
      * @return true iff the string is empty
      */
     public static boolean emptyLine(String data){
-        return genericPatternMatcher(data,BLANKLINE);
+        return genericPatternMatcher(data, BLANK_LINE);
     }
 
     /**
@@ -188,8 +199,8 @@ public class BasicParsing {
      * @return true if the string can represent a boolean value
      */
     public static boolean basicBooleanExpression(String data){
-        return genericPatternMatcher(data,BASICBOOLEANEXPRESSION) &&
-                !genericPatternMatcher(data,SPACEINMIDDLE);
+        return genericPatternMatcher(data, BASIC_BOOLEAN_EXPRESSION) &&
+                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
     }
 
     /**
@@ -197,8 +208,8 @@ public class BasicParsing {
      * @return true if the string can represent a int value
      */
     public static boolean basicIntExpression(String data){
-        return genericPatternMatcher(data,BASICINTEXPRESSION) &&
-                !genericPatternMatcher(data,SPACEINMIDDLE);
+        return genericPatternMatcher(data, BASIC_INT_EXPRESSION) &&
+                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
     }
 
     /**
@@ -206,8 +217,8 @@ public class BasicParsing {
      * @return true if the string can represent an souble value
      */
     public static boolean basicDoubleExpression(String data){
-        return genericPatternMatcher(data,BASICDOUBLEEXPRESSION) &&
-                !genericPatternMatcher(data,SPACEINMIDDLE);
+        return genericPatternMatcher(data, BASIC_DOUBLE_EXPRESSION) &&
+                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
     }
 
     /**
@@ -215,7 +226,7 @@ public class BasicParsing {
      * @return true if the string can represent a string value
      */
     public static boolean basicStringExpression(String data){
-        return genericPatternMatcher(data,BASICSTRINGEXPRESSION);
+        return genericPatternMatcher(data, BASIC_STRING_EXPRESSION);
     }
 
     /**
@@ -223,12 +234,11 @@ public class BasicParsing {
      * @return true if the string can represent a char value
      */
     public static boolean basicCharExpression(String data){
-        return genericPatternMatcher(data,BASICCAHREXPRESSION) &&
-                !genericPatternMatcher(data,SPACEINMIDDLE);
+        return genericPatternMatcher(data, BASIC_CHAR_EXPRESSION) &&
+                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
     }
 
     /**
-     *
      * @param data a string we want to check
      * @return true iff the string starts with the word final
      */
@@ -236,15 +246,22 @@ public class BasicParsing {
         return genericPatternMatcher(data,FINAL);
     }
 
+    /**
+     * @param data a string we want to check.
+     * @return true iff the data is a declaration of a new variable.
+     */
     public static boolean isDecleration(String data){
         return genericPatternMatcher(data,DECLERATION);
 
     }
 
-    public static boolean isPlacment(String data){
+    /**
+     * @param data a string we want to check.
+     * @return true iff the string is a placement of new variable.
+     */
+    public static boolean isPlacement(String data){
         return data.contains("=");
     }
-
 
 
 
@@ -330,9 +347,9 @@ public class BasicParsing {
     private static ArrayList<String> conditionTermHelp(String data) throws Exception{
         ArrayList<String> vars = new ArrayList<String>();
         data = removeWhiteSpaces(data);
-        if(genericPatternMatcher(data,BASICBOOLEANEXPRESSION) ||
-                genericPatternMatcher(data,BASICDOUBLEEXPRESSION) ||
-                genericPatternMatcher(data,BASICINTEXPRESSION)){
+        if(genericPatternMatcher(data, BASIC_BOOLEAN_EXPRESSION) ||
+                genericPatternMatcher(data, BASIC_DOUBLE_EXPRESSION) ||
+                genericPatternMatcher(data, BASIC_INT_EXPRESSION)){
             return vars;
         }
         if(variableName(data)){
@@ -349,7 +366,7 @@ public class BasicParsing {
      * @throws Exception if there is no semicolon at the end of the string
      */
     public static String checkSemicolon(String data) throws Exception{
-        if(!genericPatternMatcher(data,ENDLINESEMICOLON)){
+        if(!genericPatternMatcher(data, ENDLINE_SEMICOLON)){
             throw new Exception("No semicolon at the end of the line");
         }
         String[] splitted = removeWhiteSpaces(data).split(";");
@@ -359,6 +376,7 @@ public class BasicParsing {
         return splitted[0];
     }
 
+    
     public static VariableTypes placmentType(String data) throws Exception{
         data = removeWhiteSpaces(data);
         String[] splitted = data.split("=");
@@ -416,7 +434,7 @@ public class BasicParsing {
     public static String getName(String data) throws Exception{
         data = removeWhiteSpaces(data);
         String nameString = null;
-        if(isPlacment(data)){
+        if(isPlacement(data)){
             nameString = removeWhiteSpaces(data.split("=")[0]);
         }
         else{
@@ -474,6 +492,7 @@ public class BasicParsing {
     public static String addSpace(String data){
         return data + " ";
     }
+
 
     public static void main (String[] args ) throws Exception{
         System.out.println(DECLERATION.pattern());

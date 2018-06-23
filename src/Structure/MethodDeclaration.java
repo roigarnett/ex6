@@ -2,6 +2,9 @@ package Structure;
 
 import java.util.ArrayList;
 
+/**
+ * A class representing a method declaration.
+ */
 public class MethodDeclaration {
 
     private String name;

@@ -2,6 +2,9 @@ package Structure;
 
 import java.util.ArrayList;
 
+/**
+ * The scope of the global variables and the file itself.
+ */
 public class ClassScope extends Scope{
 
     private ArrayList<MethodDeclaration> methodDeclarations;

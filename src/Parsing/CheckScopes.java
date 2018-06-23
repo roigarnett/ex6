@@ -3,8 +3,16 @@ import Structure.*;
 
 import java.util.ArrayList;
 
+/**
+ * A service class used for managing each scope checking independently.
+ */
 public class CheckScopes {
 
+    /**
+     * checks the correctness of the class scope and updates the relevant variables in the scope.
+     * @param scope the class scope.
+     * @throws Exception if we found a line in the class scope which is illegal.
+     */
     public static void checkClassScope(ClassScope scope) throws Exception{
         int methodDeclarationNum = 0;
         for(Line line : scope.getLines()){
@@ -24,6 +32,11 @@ public class CheckScopes {
         }
     }
 
+    /**
+     * checks the correctness of the class scope and updates the relevant variables in the relevant scope.
+     * @param scope the method scope.
+     * @throws Exception if we found a line in the method scope which is illegal.
+     */
     private static void checkMethodScope(MethodScope scope) throws Exception{
         ArrayList<Variable> globalVars = scope.getFather().getVariables();
         for(Variable var : globalVars){
@@ -61,6 +74,11 @@ public class CheckScopes {
         }
     }
 
+    /**
+     * checks the correctness of the condition scope and updates the relevant variables in the scope.
+     * @param scope the condition scope.
+     * @throws Exception if we found a line in the condition scope which is illegal.
+     */
     private static void checkConditionScope(Scope scope) throws Exception{
         scope.getVariables().addAll(scope.getFather().getVariables());
         ArrayList<String> startVars =
@@ -88,6 +106,7 @@ public class CheckScopes {
             throw new Exception();
         }
     }
+
 
     private static MethodDeclaration checkMethodDecleration(String data) throws Exception{
         if(!BasicParsing.methodDecleration(data)){

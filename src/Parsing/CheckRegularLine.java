@@ -4,14 +4,11 @@ import Structure.Scope;
 import Structure.Variable;
 import Structure.VariableTypes;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class CheckRegularLine {
 
 
     public static void main (String[] args ) throws Exception{
+
         Scope scope = new Scope();
         checkLine(" return ", scope);
         checkLine("  final String  dsc    = true, dsjsd = sdius", scope);
@@ -84,7 +81,7 @@ public class CheckRegularLine {
         String name = BasicParsing.getName(line);
         checkName(name,lineType,scope);
 
-        boolean isPlacment = BasicParsing.isPlacment(line);
+        boolean isPlacment = BasicParsing.isPlacement(line);
 
         if(isPlacment){
             VariableTypes placementType = extractPlacementType(line, scope);

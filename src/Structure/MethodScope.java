@@ -2,6 +2,11 @@ package Structure;
 
 import java.util.*;
 
+/**
+ * A class representing a method scope which has certain variables and lines. It is different from Scope
+ * class because we would want to change and create variables inside the method and not change them/create
+ * them in the class scope.
+ */
 public class MethodScope extends Scope {
 
     private ArrayList<Variable> globalVariables;

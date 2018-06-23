@@ -1,0 +1,81 @@
+zivbeker
+roigarnett???
+
+=============================
+=      File description     =
+=============================
+
+oop.ex6.main package:
+ScopeFactory -
+Sjavac -
+
+Parsing package:
+BasicParsing -
+CheckConditionDecleration -
+checkMethodCall -
+CheckRegularLine -
+CheckScopes -
+
+Structure package:
+ClassScope - The scope of the global variables and the file itself. In addition to extending scope - has a
+list of all the method declarations inside the scope.
+Line - A class representing a line which holds the content of a line and a scope if this defines a one.
+MethodDeclaration - A class representing a method declaration. Used mainly to check if a method call is
+correct.
+MethodScope - A class representing a method scope which has certain variables and lines. It is different from
+Scope class because we would want to change and create variables inside the method and not change them/create
+them in the class scope.
+Scope - A class representing a scope which has certain variables and lines.
+Variable - A class describing a simple java variable.
+Enum VariableTypes - Types of variables in simple java.
+
+=============================
+=          Design           =
+=============================
+
+the design we chose is as follows:
+The three packages noted above divides our program to structure, parsing data, and the run of the whole
+program. In the structure package we hold everything that is related to the structure of the file: it's
+scopes, variable and variable types and method related classes. This package is responsible for the
+arrangement of the code in it's correct scopes. Moreover it helps checking of the validity of code lines with
+the consideration of the data we already know about each scope. The parsing package is responsible for the
+parsing of the file and the actual check of the validity of code lines. It holds a few classes each
+responsible for a different parsing/checking part: BasicParsing is responsible for simple checking and parsing
+which are relevant to almost all of the other classes in this package. Each one of the other classes in this
+package checks a different part in the file (as described above).
+The oop.ex6.main is responsible for the creation of the different scopes using factory design pattern
+(ScopeFactory) and for getting the data from the file and running the respected checks in the parsing package.
+
+error handling:
+When we have an io.Exception we discover it at the extraction of data before the actual check of the file
+lines. For the check of the validity of the file lines: we have multiple checks mainly in the parsing package.
+ If we know a certain line is illegal - we immediately throw an exception with a message representing the
+ problem. In the main process (in Sjavac Class) we catch that error and print 1. We didn't used exceptions
+ classes because we didn't see the necessity of it.
+
+
+=============================
+=  Implementation details   =
+=============================
+
+In this part we would to how we would modify our code in order to use methods of standard java methods and
+check more than one class in our file:
+
+standart java methods - we have already in the program a list containing all the method declarations that are
+in the file. All we would to do is to add to it the method declarations of the standard java methods. Because
+our check if a method call is legal or not depends only on the method declaration and the method call - we
+wouldn't need to change anything else in the code.
+
+______
+
+
+In this part we would explain about two useful regexes we in our code:
+
+method declaration regex - "^\\s*void\\s{1,}[a-zA-Z]\\S*\\s*\\(.*\\)\\s*\\{\\s*$" - this regex tells us if a
+skeleton of a method is legal or not. Basically it tells us if a line we think is a method declaration looks
+like this:
+void    *method_name*     ( ...   )     {
+A line match this regex iff it can be a line which declares a method.
+
+another regex -
+

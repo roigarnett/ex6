@@ -1,0 +1,11 @@
+int b=5, x=32732,y=327    ;
+
+void foo(int l, String v, boolean h){
+
+if(h){
+x=700;
+}
+return;
+}
+
+final String j=8;
