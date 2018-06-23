@@ -9,18 +9,27 @@ import java.util.*;
  */
 public class MethodScope extends Scope {
 
+    /**a list of the scope's global variables*/
     private ArrayList<Variable> globalVariables;
 
+    /**
+     * creates a new empty method scope
+     */
     public MethodScope(){
         super();
         this.globalVariables = new ArrayList<Variable>();
     }
 
+    /**
+     * creates a new scope with no variables and no lines
+     * @param father the scope that contains this scope.
+     */
     public MethodScope(Scope father){
         super(father);
         this.globalVariables = new ArrayList<Variable>();
     }
 
+    @Override
     public Variable getVariableFromName(String name){
         for (Variable var : this.getVariables()) {
             if (var.getName().equals(name)) {
@@ -35,6 +44,9 @@ public class MethodScope extends Scope {
         return null;
     }
 
+    /**
+     * @return the list of global variables
+     */
     public ArrayList<Variable> getGlobalVariables(){
         return this.globalVariables;
     }

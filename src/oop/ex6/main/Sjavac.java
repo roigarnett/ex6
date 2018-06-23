@@ -16,6 +16,9 @@ public class Sjavac {
      */
     public static void main(String [] args){
         try{
+            if(args.length != 1){
+                throw new IOException("The system cannot find the path specified");
+            }
             File sourceFile = new File(args[0]);
             ArrayList<String> data = extractData(sourceFile);
             data = removeEmptyLines(data);
@@ -40,7 +43,7 @@ public class Sjavac {
      * @return a list of Strings representing the text from the file
      * @throws java.io.IOException if there is any IO problem
      */
-    private static ArrayList<String> extractData(File file) throws java.io.IOException{
+    private static ArrayList<String> extractData(File file) throws IOException{
         ArrayList<String> data = new ArrayList<String>();
         FileReader fileReader = new FileReader(file);
         BufferedReader br = new BufferedReader(fileReader);

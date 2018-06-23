@@ -5,18 +5,24 @@ package Structure;
  */
 public class Variable {
 
+    /**the variable type*/
     private VariableTypes type;
+
+    /**the variable name*/
     private String name;
+
+    /**whether the variable is final*/
     private boolean isFinal;
+
     /*a field indicating whether the variable has been initialized or not. */
     private boolean initialized;
 
     /**
      * Creates a new initialized variable.
-     * @param type
-     * @param name
-     * @param isFinal
-     * @param initialized
+     * @param type the variable type
+     * @param name the variable name
+     * @param isFinal whether the variable is final
+     * @param initialized whether the variable is initialized
      */
     public Variable(VariableTypes type, String name, boolean isFinal, boolean initialized) throws Exception{
         this.type = type;
@@ -30,9 +36,9 @@ public class Variable {
 
     /**
      * Creates a new uninitialized variable.
-     * @param type
-     * @param name
-     * @param isFinal
+     * @param type the variable type
+     * @param name the variable name
+     * @param isFinal whether the variable is final
      */
     public Variable(VariableTypes type, String name, boolean isFinal) throws Exception{
         this.type = type;
@@ -49,6 +55,32 @@ public class Variable {
         this.name = var.name;
         this.isFinal = var.isFinal;
         this.initialized = var.initialized;
+    }
+
+    /**
+     * @return the variable's name
+     */
+    public String getName(){
+        return this.name;
+    }
+
+    /**
+     * @return the variable's type
+     */
+    public VariableTypes getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        String varString = type.toString() + " " + name;
+        if (isFinal){
+            varString = "final " + varString;
+        }
+        if (isInitialized()) {
+            varString = varString + " initialized";
+        }
+        return varString + " ";
     }
 
     /**
@@ -70,23 +102,4 @@ public class Variable {
 
     }
 
-    public String getName(){
-        return this.name;
-    }
-
-    public VariableTypes getType() {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        String varString = type.toString() + " " + name;
-        if (isFinal){
-            varString = "final " + varString;
-        }
-        if (isInitialized()) {
-            varString = varString + " initialized";
-        }
-        return varString + " ";
-    }
 }

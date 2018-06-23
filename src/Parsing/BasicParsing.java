@@ -49,7 +49,6 @@ public class BasicParsing {
     private static Pattern BLANK_LINE = Pattern.compile("^\\s*$");
 
 
-
     /**
      * @param dataWithBrackets a string containing brackets
      * @return the characters inside the brackets
@@ -102,7 +101,7 @@ public class BasicParsing {
         String[] splitted = dataWithSpaces.split(" ");
         String resultString = "";
         for(String word : splitted){
-            if(!(word.equals("")||word.equals("\t"))){
+            if(!genericPatternMatcher(word,BLANK_LINE)){
                 resultString += " " + word;
             }
         }
@@ -118,6 +117,52 @@ public class BasicParsing {
     private static boolean genericPatternMatcher(String data,Pattern regex){
         Matcher m = regex.matcher(data);
         return m.find();
+    }
+
+
+
+    /**
+     * @param data a string we want to check
+     * @return true if the string can represent a boolean value
+     */
+    private static boolean basicBooleanExpression(String data){
+        return genericPatternMatcher(data, BASIC_BOOLEAN_EXPRESSION) &&
+                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
+    }
+
+    /**
+     * @param data a string we want to check
+     * @return true if the string can represent a int value
+     */
+    private static boolean basicIntExpression(String data){
+        return genericPatternMatcher(data, BASIC_INT_EXPRESSION) &&
+                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
+    }
+
+    /**
+     * @param data a string we want to check
+     * @return true if the string can represent an souble value
+     */
+    private static boolean basicDoubleExpression(String data){
+        return genericPatternMatcher(data, BASIC_DOUBLE_EXPRESSION) &&
+                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
+    }
+
+    /**
+     * @param data a string we want to check
+     * @return true if the string can represent a string value
+     */
+    private static boolean basicStringExpression(String data){
+        return genericPatternMatcher(data, BASIC_STRING_EXPRESSION);
+    }
+
+    /**
+     * @param data a string we want to check
+     * @return true if the string can represent a char value
+     */
+    private static boolean basicCharExpression(String data){
+        return genericPatternMatcher(data, BASIC_CHAR_EXPRESSION) &&
+                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
     }
 
 
@@ -192,50 +237,6 @@ public class BasicParsing {
      */
     public static boolean emptyLine(String data){
         return genericPatternMatcher(data, BLANK_LINE);
-    }
-
-    /**
-     * @param data a string we want to check
-     * @return true if the string can represent a boolean value
-     */
-    public static boolean basicBooleanExpression(String data){
-        return genericPatternMatcher(data, BASIC_BOOLEAN_EXPRESSION) &&
-                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
-    }
-
-    /**
-     * @param data a string we want to check
-     * @return true if the string can represent a int value
-     */
-    public static boolean basicIntExpression(String data){
-        return genericPatternMatcher(data, BASIC_INT_EXPRESSION) &&
-                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
-    }
-
-    /**
-     * @param data a string we want to check
-     * @return true if the string can represent an souble value
-     */
-    public static boolean basicDoubleExpression(String data){
-        return genericPatternMatcher(data, BASIC_DOUBLE_EXPRESSION) &&
-                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
-    }
-
-    /**
-     * @param data a string we want to check
-     * @return true if the string can represent a string value
-     */
-    public static boolean basicStringExpression(String data){
-        return genericPatternMatcher(data, BASIC_STRING_EXPRESSION);
-    }
-
-    /**
-     * @param data a string we want to check
-     * @return true if the string can represent a char value
-     */
-    public static boolean basicCharExpression(String data){
-        return genericPatternMatcher(data, BASIC_CHAR_EXPRESSION) &&
-                !genericPatternMatcher(data, SPACE_IN_MIDDLE);
     }
 
     /**
@@ -389,7 +390,7 @@ public class BasicParsing {
         return getType(removeWhiteSpaces(splitted[1]));
     }
 
-    public static VariableTypes getType(String data){
+    private static VariableTypes getType(String data){
         data = removeWhiteSpaces(data);
         if(basicIntExpression(data)){
             return VariableTypes.INT;
@@ -493,8 +494,4 @@ public class BasicParsing {
         return data + " ";
     }
 
-
-    public static void main (String[] args ) throws Exception{
-        System.out.println(DECLERATION.pattern());
-    }
 }

@@ -4,9 +4,13 @@ package Structure;
  * Types of variables in simple java.
  */
 public enum VariableTypes {
-    INT, STRING, BOOLEAN, DOUBLE, CHAR, ERROR, OTHER_VAR;
+    INT, STRING, BOOLEAN, DOUBLE, CHAR, OTHER_VAR;
 
-
+    /**
+     * @param data a string representing a variable type, or an other variable name
+     * @return the matching VariableType
+     * @throws Exception if the string doesn't represent any variable type
+     */
     public static VariableTypes getType(String data) throws Exception{
         if(data.equals("int")){
             return INT;
@@ -31,14 +35,11 @@ public enum VariableTypes {
         }
     }
 
-    public static boolean isVariablesTypeMatch (Variable var1, Variable var2){
-        return var1.getType() == var2.getType();
-    }
-
-    public static boolean isStringMatchVariableType(String str, Variable var) throws Exception{
-        return getType(str) == var.getType();
-    }
-
+    /**
+     * @param nameType a variable type (1)
+     * @param placementType a variable type (2)
+     * @return true iff type (2) can be assignd to type (1)
+     */
     public static boolean isPlacementPossible(VariableTypes nameType, VariableTypes placementType){
         return (nameType==placementType || (nameType==DOUBLE && placementType==INT)
                 || (nameType==BOOLEAN && placementType==DOUBLE)
