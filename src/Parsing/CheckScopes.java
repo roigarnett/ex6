@@ -19,7 +19,11 @@ public class CheckScopes {
             String data = line.getContent();
             if(line.getScope() != null){
                 MethodDeclaration md = scope.getMethodDeclarations().get(methodDeclarationNum);
-                md.update(checkMethodDecleration(data));
+                MethodDeclaration newMd = checkMethodDecleration(data);
+                if(!scope.methodNameValid(newMd.getName())){
+                    throw new Exception("two methods with the same name detected");
+                }
+                md.update(newMd);
                 methodDeclarationNum += 1;
             }
             else{
@@ -103,14 +107,14 @@ public class CheckScopes {
         }
         String methodClose = scope.getLines().get(scopeLength - 1).getContent();
         if(!BasicParsing.endScope(methodClose)){
-            throw new Exception();
+            throw new Exception("scope must end with a closing semicolon");
         }
     }
 
 
     private static MethodDeclaration checkMethodDecleration(String data) throws Exception{
         if(!BasicParsing.methodDecleration(data)){
-            throw new Exception();
+            throw new Exception("bad method declaration format");
         }
         data = BasicParsing.methodDeclerationData(data);
         String name = BasicParsing.methodDeclerationName(data);
