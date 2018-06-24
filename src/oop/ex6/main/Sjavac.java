@@ -30,14 +30,17 @@ public class Sjavac {
             ClassScopeSingleton scope = ScopeFactory.createClassScope(data);
             CheckScopes.checkClassScope(scope);
             System.out.println("0");
+            ClassScopeSingleton.disposeClass();
         }
         catch (IOException exception){
             System.out.println("2");
             System.err.println(exception.getMessage());
+            ClassScopeSingleton.disposeClass();
         }
         catch (Exception exception){
             System.out.println("1");
             System.err.println(exception.getMessage());
+            ClassScopeSingleton.disposeClass();
         }
 
     }

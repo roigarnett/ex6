@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class ClassScopeSingleton extends Scope{
 
     /*The instance of the class' scope.*/
-    private static ClassScopeSingleton ClassScope = null;
+    private static ClassScopeSingleton classScope = null;
     /**a list of methods declared in the class*/
     private ArrayList<MethodDeclaration> methodDeclarations;
 
@@ -24,11 +24,14 @@ public class ClassScopeSingleton extends Scope{
      * @return the single class' scope instance (or creates a new one and returns it).
      */
     public static ClassScopeSingleton getInstance() {
-        if (ClassScope == null)
-             ClassScope = new ClassScopeSingleton();
-        return ClassScope;
+        if (classScope == null)
+             classScope = new ClassScopeSingleton();
+        return classScope;
     }
 
+    public static void disposeClass(){
+        classScope = null;
+    }
 
     /**
      * adds a method declaration to the scope
