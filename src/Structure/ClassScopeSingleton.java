@@ -5,18 +5,30 @@ import java.util.ArrayList;
 /**
  * The scope of the global variables and the file itself.
  */
-public class ClassScope extends Scope{
+public class ClassScopeSingleton extends Scope{
 
+    /*The instance of the class' scope.*/
+    private static ClassScopeSingleton ClassScope = null;
     /**a list of methods declared in the class*/
     private ArrayList<MethodDeclaration> methodDeclarations;
 
     /**
      * creates a new class scope
      */
-    public ClassScope(){
+    private ClassScopeSingleton(){
         super();
         methodDeclarations = new ArrayList<MethodDeclaration>();
     }
+
+    /**
+     * @return the single class' scope instance (or creates a new one and returns it).
+     */
+    public static ClassScopeSingleton getInstance() {
+        if (ClassScope == null)
+             ClassScope = new ClassScopeSingleton();
+        return ClassScope;
+    }
+
 
     /**
      * adds a method declaration to the scope

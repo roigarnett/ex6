@@ -3,8 +3,10 @@ import Structure.*;
 import Parsing.BasicParsing;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
+/**
+ * A factory class that creates scopes and add the the lines of each scope to it's respectable class.
+ */
 public class ScopeFactory {
 
     /**
@@ -12,8 +14,8 @@ public class ScopeFactory {
      * @return a scope hierarchy of the file
      * @throws Exception if there is a problem in the Sjava file
      */
-    public static ClassScope createClassScope(ArrayList<String> data) throws Exception{
-        ClassScope scope = new ClassScope();
+    public static ClassScopeSingleton createClassScope(ArrayList<String> data) throws Exception{
+        ClassScopeSingleton scope = ClassScopeSingleton.getInstance();
         for(int i = 0; i < data.size(); i++){
             String line = data.get(i);
             if(BasicParsing.startScope(line)){

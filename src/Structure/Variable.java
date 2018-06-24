@@ -50,6 +50,10 @@ public class Variable {
 
     }
 
+    /**
+     * A copy constructor of another variable
+     * @param var the other variable to be copied.
+     */
     public Variable (Variable var){
         this.type = var.type;
         this.name = var.name;

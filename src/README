@@ -6,15 +6,15 @@ roigarnett???
 =============================
 
 oop.ex6.main package:
-ScopeFactory -
-Sjavac -
+ScopeFactory - A factory class that creates scopes and add the the lines of each scope to it's respectable
+class.
+Sjavac - The "main" class of the program. extracts data, removes lines which are not interesting (comments and
+empty lines) and runs the whole program.
 
 Parsing package:
-BasicParsing -
-CheckConditionDecleration -
-checkMethodCall -
-CheckRegularLine -
-CheckScopes -
+BasicParsing - A class that responsible for simple checking and parsing of line parts.
+GeneralLineCheck - A class which contains static methods which checks if a line in the code is valid.
+CheckScopes - A service class used for managing each scope checking independently.
 
 Structure package:
 ClassScope - The scope of the global variables and the file itself. In addition to extending scope - has a
@@ -46,6 +46,8 @@ package checks a different part in the file (as described above).
 The oop.ex6.main is responsible for the creation of the different scopes using factory design pattern
 (ScopeFactory) and for getting the data from the file and running the respected checks in the parsing package.
 
+Usage of singleton____________________________________
+
 error handling:
 When we have an io.Exception we discover it at the extraction of data before the actual check of the file
 lines. For the check of the validity of the file lines: we have multiple checks mainly in the parsing package.
@@ -66,7 +68,7 @@ in the file. All we would to do is to add to it the method declarations of the s
 our check if a method call is legal or not depends only on the method declaration and the method call - we
 wouldn't need to change anything else in the code.
 
-______
+another extension _______________________________________
 
 
 In this part we would explain about two useful regexes we in our code:
@@ -77,5 +79,10 @@ like this:
 void    *method_name*     ( ...   )     {
 A line match this regex iff it can be a line which declares a method.
 
-another regex -
+blank line regex - "^\\s*$" - it appears to be simple and trivial but in fact was one of our more useful
+regexes in our program. That regex was the foundation of our "removeWhiteSpaces" method (in basicParsing
+package) which basically removes every spare space in each line. That method helped us a lot(!!) in our
+parsing and it much more easier(!!!). That's why this simple little regex receives a royal treatment from us.
+
+
 

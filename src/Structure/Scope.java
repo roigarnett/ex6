@@ -124,14 +124,14 @@ public class Scope {
     /**
      * @return the class class scope which contians this scope
      */
-    public ClassScope getClassScope(){
+    public ClassScopeSingleton getClassScope(){
         Scope currentScope = this;
         Scope father = currentScope.getFather();
         while(father != null) {
             currentScope = father;
             father = currentScope.getFather();
         }
-        return (ClassScope)currentScope;
+        return (ClassScopeSingleton)currentScope;
     }
 
     /**

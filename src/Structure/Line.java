@@ -21,7 +21,7 @@ public class Line {
     }
 
     /**
-     * creates a new line
+     * creates a new line with a scope that this line opens
      * @param content the content of the line
      * @param scope the scope this line opens
      */

@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.util.*;
 import java.io.File;
 
+/**
+ * The "main" class of the program. extracts data, removes lines which are not interesting (comments and
+ * empty lines) and runs the whole program.
+ */
 public class Sjavac {
 
     /**
@@ -23,7 +27,7 @@ public class Sjavac {
             ArrayList<String> data = extractData(sourceFile);
             data = removeEmptyLines(data);
             data = removeComments(data);
-            ClassScope scope = ScopeFactory.createClassScope(data);
+            ClassScopeSingleton scope = ScopeFactory.createClassScope(data);
             CheckScopes.checkClassScope(scope);
             System.out.println("0");
         }

@@ -13,7 +13,7 @@ public class CheckScopes {
      * @param scope the class scope.
      * @throws Exception if we found a line in the class scope which is illegal.
      */
-    public static void checkClassScope(ClassScope scope) throws Exception{
+    public static void checkClassScope(ClassScopeSingleton scope) throws Exception{
         int methodDeclarationNum = 0;
         for(Line line : scope.getLines()){
             String data = line.getContent();
