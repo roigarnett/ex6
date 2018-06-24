@@ -377,7 +377,12 @@ public class BasicParsing {
         return splitted[0];
     }
 
-    
+    /**
+     * this method gets a placement and returns its type (int, string, etc...)
+     * @param data the placement
+     * @return the variable type
+     * @throws Exception if the string can't represent a placement
+     */
     public static VariableTypes placmentType(String data) throws Exception{
         data = removeWhiteSpaces(data);
         String[] splitted = data.split("=");
@@ -390,6 +395,11 @@ public class BasicParsing {
         return getType(removeWhiteSpaces(splitted[1]));
     }
 
+    /**
+     * this method gets a string representing a type and returns an actual type
+     * @param data the string representing the type
+     * @return a variable type
+     */
     private static VariableTypes getType(String data){
         data = removeWhiteSpaces(data);
         if(basicIntExpression(data)){
@@ -410,6 +420,12 @@ public class BasicParsing {
         return VariableTypes.OTHER_VAR;
     }
 
+    /**
+     * this method gets a placement and returns the variable's name
+     * @param data the placement
+     * @return the variable's name
+     * @throws Exception if the string can't represent a placement
+     */
     public static String getVariablePlacmentName(String data) throws Exception{
         data = removeWhiteSpaces(data);
         String[] splitted = data.split("=");
@@ -419,6 +435,12 @@ public class BasicParsing {
         return removeWhiteSpaces(splitted[1]);
     }
 
+    /**
+     * this method gets a deceleration with the word final and removes it
+     * @param data the deceleration
+     * @return the deceleration without the word final
+     * @throws Exception if there is no word final
+     */
     public static String removeFinal(String data) throws Exception{
         if(!isFinal(data)){
             throw new Exception("there is not final in this line");
@@ -427,11 +449,22 @@ public class BasicParsing {
         return removeWhiteSpaces(data);
     }
 
-    public static String removeDecleration(String data) throws Exception{
+    /**
+     * this method gets a deceleration and removes the deceleration type
+     * @param data the deceleration
+     * @return the deceleration without the type
+     */
+    public static String removeDecleration(String data){
         data = data.split(DECLERATION.pattern())[1];
         return removeWhiteSpaces(data);
     }
 
+    /**
+     * gets a regular line and returns the variable's name
+     * @param data the line
+     * @return the name
+     * @throws Exception if the name can't be a variable name
+     */
     public static String getName(String data) throws Exception{
         data = removeWhiteSpaces(data);
         String nameString = null;
@@ -447,21 +480,39 @@ public class BasicParsing {
         return nameString;
     }
 
+    /**
+     * this method gets a deceleration and returns its type
+     * @param data the deceleration
+     * @return a variable type
+     * @throws Exception if the string can't represent a deceleration
+     */
     public static VariableTypes declerationType(String data) throws Exception{
         if(!isDecleration(data)){
-            throw new Exception("not a decleration type");
+            throw new Exception("not a deceleration type");
         }
         data = data.split(" ")[0];
         return VariableTypes.getType(removeWhiteSpaces(data));
     }
 
+    /**
+     * this method gets a string representing a method deceleration and removes the word 'void'
+     * @param data the deceleration
+     * @return the deceleration without the word void
+     * @throws Exception if the string can't represent a method deceleration
+     */
     public static String methodDeclerationData(String data) throws Exception{
         if(!methodDecleration(data)){
-            throw new Exception("bad method decleration");
+            throw new Exception("bad method deceleration");
         }
         return removeWhiteSpaces(data.split("void")[1]);
     }
 
+    /**
+     * this method gets a string representing a method call and return a list of types it sends
+     * @param data the method call
+     * @return a list of variable types which are the types that are in the call
+     * @throws Exception if the string can't represent a method call
+     */
     public static ArrayList<VariableTypes> methodCallVars(String data) throws Exception{
         ArrayList<VariableTypes> types = new ArrayList<VariableTypes>();
         data = dataInBrackets(data);
@@ -476,6 +527,12 @@ public class BasicParsing {
         return types;
     }
 
+    /**
+     * this method gets a string representing a method call and return a list of strings it sends
+     * @param data the method call
+     * @return a list of strings which are the things that are in the call
+     * @throws Exception if the string can't represent a method call
+     */
     public static ArrayList<String> methodCallNames(String data) throws Exception{
         ArrayList<String> names = new ArrayList<String>();
         data = dataInBrackets(data);
@@ -490,6 +547,10 @@ public class BasicParsing {
         return names;
     }
 
+    /**
+     * @param data a string
+     * @return the string with a space at the end
+     */
     public static String addSpace(String data){
         return data + " ";
     }
