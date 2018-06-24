@@ -1,22 +1,16 @@
 package Parsing;
 
+import Structure.MethodDeclaration;
 import Structure.Scope;
 import Structure.Variable;
 import Structure.VariableTypes;
 
-public class CheckRegularLine {
+import java.util.ArrayList;
 
-
-    public static void main (String[] args ) throws Exception{
-
-        Scope scope = new Scope();
-        checkLine(" return ", scope);
-        checkLine("  final String  dsc    = true, dsjsd = sdius", scope);
-        checkLine("int jsd = 212, dsjc = 2617, hoenc", scope);
-        checkLine("String skdsd = ", scope);
-        scope.printScopeVariables();
-
-    }
+/**
+ * this class contains static methods which checks if a line in the code is valid
+ */
+public class GeneralLineCheck {
 
 
     /**
@@ -25,7 +19,7 @@ public class CheckRegularLine {
      * @return
      * @throws Exception
      */
-    static void checkLine(String line, Scope scope) throws Exception{
+    static void checkRegularLine(String line, Scope scope) throws Exception{
         boolean isFinal;
         VariableTypes lineType = null;
         VariableTypes placementType = null;
@@ -60,6 +54,12 @@ public class CheckRegularLine {
     }
 
 
+    /**
+     * this method returns a variable type if
+     * @param line a line to check
+     * @return a variable type if the line is a declaration, and null if not
+     * @throws Exception if there is a problem with the line
+     */
     private static VariableTypes isDeclaration(String line) throws Exception{
         VariableTypes type = null;
         boolean isDeclare = BasicParsing.isDecleration(line);
@@ -79,7 +79,9 @@ public class CheckRegularLine {
             scope ) throws Exception{
 
         String name = BasicParsing.getName(line);
-        checkName(name,lineType,scope);
+        if(lineType != null){
+            checkName(name,scope);
+        }
 
         boolean isPlacment = BasicParsing.isPlacement(line);
 
@@ -96,24 +98,32 @@ public class CheckRegularLine {
 
     }
 
-    private static void checkName(String name, VariableTypes lineType, Scope scope) throws Exception{
-        if(lineType != null){
-            if(!BasicParsing.variableName(name)){
-                throw new Exception("illegal variable name");
-            }
-            if(!scope.variableNameValid(name)){
-                throw new Exception("variable name already exists");
-            }
+    /**
+     * this method check if a variable name is valid in a certain scope
+     * @param name the variable name
+     * @param scope the current scope
+     * @throws Exception if the variable name is valid in a certain scope
+     */
+    private static void checkName(String name, Scope scope) throws Exception{
+        if(!BasicParsing.variableName(name)){
+            throw new Exception("illegal variable name");
         }
-        else{
-
+        if(!scope.variableNameValid(name)){
+            throw new Exception("variable name already exists");
         }
-
     }
 
+    /**
+     *
+     * @param isFinal
+     * @param lineType
+     * @param name
+     * @param placementType
+     * @param scope
+     * @throws Exception
+     */
     private static void checkPlacementsTypes(boolean isFinal, VariableTypes lineType, String
             name, VariableTypes placementType, Scope scope)  throws Exception {
-
         if(lineType != null){
             if(!VariableTypes.isPlacementPossible(lineType, placementType)){
                 throw new Exception("variable type and placement type do not match");
@@ -165,6 +175,15 @@ public class CheckRegularLine {
     }
 
 
+    /**
+     *
+     * @param isFinal
+     * @param expression
+     * @param lineType
+     * @param scope
+     * @param isInitialized
+     * @throws Exception
+     */
     private static void addVariable(boolean isFinal, String expression, VariableTypes lineType, Scope
             scope, boolean isInitialized) throws Exception {
         String name = BasicParsing.removeWhiteSpaces(expression);
@@ -174,6 +193,78 @@ public class CheckRegularLine {
         else {
             scope.addVariable(new Variable(lineType, name, isFinal, isInitialized));
         }
+    }
+
+
+    /**
+     * this method checks if a method call is valid
+     * @param data a string representing the method call
+     * @param scope the current scope
+     * @throws Exception if the call isn't valid
+     */
+    public static void checkMethodCall(String data, Scope scope) throws Exception{
+        if(!BasicParsing.methodCall(data)){
+            throw new Exception();
+        }
+        String name = BasicParsing.methodDeclerationName(data);
+        ArrayList<Variable> originalVars = scope.getClassScope().getMethodFromName(name).getArgs();
+        ArrayList<VariableTypes> calledVars = BasicParsing.methodCallVars(data);
+        ArrayList<String> calledVarsNames = BasicParsing.methodCallNames(data);
+        if(originalVars.size() != calledVars.size()){
+            throw new Exception();
+        }
+        for(int i = 0; i < originalVars.size(); i++){
+            Variable orgVar = originalVars.get(i);
+            VariableTypes callType = calledVars.get(i);
+            if(callType.equals(VariableTypes.OTHER_VAR)){
+                Variable callVar = scope.getVariableFromName(calledVarsNames.get(i));
+                if(callVar == null || !callVar.isInitialized()){
+                    throw new Exception("called variable is not ininitializd");
+                }
+                callType = callVar.getType();
+            }
+            if(!VariableTypes.isPlacementPossible(orgVar.getType(),callType)){
+                throw new Exception();
+            }
+        }
+    }
+
+    /**
+     * this method checks if a condition declaration is valid
+     * @param data a string representing the condition declaration
+     * @param scope the current scope
+     * @throws Exception if the declaration isn't valid
+     */
+    public static void checkConditionDecleration(String data, Scope scope) throws Exception{
+        if(!BasicParsing.conditionCall(data)){
+            throw new Exception();
+        }
+        ArrayList<String> booleanVariables = BasicParsing.conditionTerm(data);
+        for(String varName : booleanVariables){
+            Variable var = scope.getVariableFromName(varName);
+            if(var == null || !var.isInitialized()){
+                throw new Exception();
+            }
+            if(!VariableTypes.isPlacementPossible(VariableTypes.BOOLEAN,var.getType())){
+                throw new Exception();
+            }
+        }
+    }
+
+    /**
+     * this method checks if a method declaration is valid
+     * @param data a string representing the method declaration
+     * @return a new method declaration object (if the declaration is valid)
+     * @throws Exception if the declaration isn't valid
+     */
+    public static MethodDeclaration checkMethodDecleration(String data) throws Exception{
+        if(!BasicParsing.methodDecleration(data)){
+            throw new Exception("bad method declaration format");
+        }
+        data = BasicParsing.methodDeclerationData(data);
+        String name = BasicParsing.methodDeclerationName(data);
+        ArrayList<Variable> vars = BasicParsing.methodDeclerationVars(data);
+        return new MethodDeclaration(name,vars);
     }
 
 }

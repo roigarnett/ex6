@@ -19,7 +19,7 @@ public class CheckScopes {
             String data = line.getContent();
             if(line.getScope() != null){
                 MethodDeclaration md = scope.getMethodDeclarations().get(methodDeclarationNum);
-                MethodDeclaration newMd = checkMethodDecleration(data);
+                MethodDeclaration newMd = GeneralLineCheck.checkMethodDecleration(data);
                 if(!scope.methodNameValid(newMd.getName())){
                     throw new Exception("two methods with the same name detected");
                 }
@@ -28,7 +28,7 @@ public class CheckScopes {
             }
             else{
                 data = BasicParsing.checkSemicolon(data);
-                CheckRegularLine.checkLine(data,scope);
+                GeneralLineCheck.checkRegularLine(data,scope);
             }
         }
         for(MethodDeclaration md : scope.getMethodDeclarations()){
@@ -46,7 +46,7 @@ public class CheckScopes {
         for(Variable var : globalVars){
             scope.getGlobalVariables().add(new Variable(var));
         }
-        MethodDeclaration md = checkMethodDecleration(scope.getLines().get(0).getContent());
+        MethodDeclaration md = GeneralLineCheck.checkMethodDecleration(scope.getLines().get(0).getContent());
         for(Variable var : (md.getArgs())){
             scope.addVariable(var);
         }
@@ -55,16 +55,16 @@ public class CheckScopes {
             Line line = scope.getLines().get(i);
             String data = line.getContent();
             if(line.getScope() != null){
-                CheckConditionDecleration.check(data,scope);
+                GeneralLineCheck.checkConditionDecleration(data,scope);
                 checkConditionScope(line.getScope());
             }
             else{
                 data = BasicParsing.checkSemicolon(data);
                 if(BasicParsing.methodCall(data)){
-                    checkMethodCall.check(data,scope);
+                    GeneralLineCheck.checkMethodCall(data,scope);
                 }
                 else if(!BasicParsing.returnCall(data)){
-                    CheckRegularLine.checkLine(data, scope);
+                    GeneralLineCheck.checkRegularLine(data, scope);
                 }
             }
         }
@@ -74,7 +74,7 @@ public class CheckScopes {
         }
         String methodClose = scope.getLines().get(scopeLength - 1).getContent();
         if(!BasicParsing.endScope(methodClose)){
-            throw new Exception();
+            throw new Exception("scope must end with a closing semicolon");
         }
     }
 
@@ -85,23 +85,20 @@ public class CheckScopes {
      */
     private static void checkConditionScope(Scope scope) throws Exception{
         scope.getVariables().addAll(scope.getFather().getVariables());
-        ArrayList<String> startVars =
-                checkConditionDecleration(scope.getLines().get(0).getContent());
         int scopeLength = scope.getLines().size();
         for(int i = 1; i < scopeLength - 1; i ++){
             Line line = scope.getLines().get(i);
             String data = line.getContent();
             if(line.getScope() != null){
-                ArrayList<String> vars = checkConditionDecleration(data);
                 checkConditionScope(line.getScope());
             }
             else{
                 data = BasicParsing.checkSemicolon(data);
                 if(BasicParsing.methodCall(data)){
-                    checkMethodCall.check(data,scope);
+                    GeneralLineCheck.checkMethodCall(data,scope);
                 }
                 else if(!BasicParsing.returnCall(data)){
-                    CheckRegularLine.checkLine(data, scope);
+                    GeneralLineCheck.checkRegularLine(data, scope);
                 }
             }
         }
@@ -110,25 +107,5 @@ public class CheckScopes {
             throw new Exception("scope must end with a closing semicolon");
         }
     }
-
-
-    private static MethodDeclaration checkMethodDecleration(String data) throws Exception{
-        if(!BasicParsing.methodDecleration(data)){
-            throw new Exception("bad method declaration format");
-        }
-        data = BasicParsing.methodDeclerationData(data);
-        String name = BasicParsing.methodDeclerationName(data);
-        ArrayList<Variable> vars = BasicParsing.methodDeclerationVars(data);
-        return new MethodDeclaration(name,vars);
-    }
-
-    private static ArrayList<String> checkConditionDecleration(String data) throws Exception{
-        if(!BasicParsing.conditionCall(data)){
-            throw new Exception();
-        }
-        return BasicParsing.conditionTerm(data);
-    }
-
-
 
 }
