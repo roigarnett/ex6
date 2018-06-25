@@ -176,13 +176,13 @@ public class GeneralLineCheck {
 
 
     /**
-     *
-     * @param isFinal
-     * @param expression
-     * @param lineType
-     * @param scope
-     * @param isInitialized
-     * @throws Exception
+     * Adds a new variable to the relevant scope if this is the line meaning.
+     * @param isFinal A boolean indicator - indicates whether the new variable is final or not.
+     * @param expression The expression from which to extract the variable declaration.
+     * @param lineType The type of the new variable.
+     * @param scope The relevant scope
+     * @param isInitialized A boolean indicator - indicates whether the new variable is initialized or not.
+     * @throws Exception if the line has no meaning and is incorrect.
      */
     private static void addVariable(boolean isFinal, String expression, VariableTypes lineType, Scope
             scope, boolean isInitialized) throws Exception {

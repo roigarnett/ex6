@@ -17,8 +17,8 @@ GeneralLineCheck - A class which contains static methods which checks if a line 
 CheckScopes - A service class used for managing each scope checking independently.
 
 Structure package:
-ClassScope - The scope of the global variables and the file itself. In addition to extending scope - has a
-list of all the method declarations inside the scope.
+ClassScope - The singleton scope of the global variables and the file itself. In addition to extending scope -
+has a list of all the method declarations inside the scope.
 Line - A class representing a line which holds the content of a line and a scope if this defines a one.
 MethodDeclaration - A class representing a method declaration. Used mainly to check if a method call is
 correct.
@@ -45,8 +45,8 @@ which are relevant to almost all of the other classes in this package. Each one 
 package checks a different part in the file (as described above).
 The oop.ex6.main is responsible for the creation of the different scopes using factory design pattern
 (ScopeFactory) and for getting the data from the file and running the respected checks in the parsing package.
-
-Usage of singleton____________________________________
+We used singleton for the class scope class because we know that there is only one file and one class scope
+which we need to test each time.
 
 error handling:
 When we have an io.Exception we discover it at the extraction of data before the actual check of the file

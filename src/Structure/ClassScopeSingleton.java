@@ -1,11 +1,12 @@
 package Structure;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * The scope of the global variables and the file itself.
+ * The singleton scope of the global variables and the file itself.
  */
-public class ClassScopeSingleton extends Scope{
+public class ClassScopeSingleton extends Scope implements Serializable{
 
     /*The instance of the class' scope.*/
     private static ClassScopeSingleton classScope = null;
