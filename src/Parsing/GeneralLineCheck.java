@@ -146,10 +146,10 @@ public class GeneralLineCheck {
 
 
     /**
-     * extarct placement type from expression
-     * @param expression
-     * @param scope
-     * @return
+     * extract placement type from expression
+     * @param expression the expression
+     * @param scope the scope of which this expression lives.
+     * @return a type of variable if this expression defines such.
      * @throws Exception if placement is another variable and does not exist and if placement is not
      * recognized
      */
