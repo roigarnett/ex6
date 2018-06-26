@@ -30,6 +30,9 @@ public class ClassScopeSingleton extends Scope implements Serializable{
         return classScope;
     }
 
+    /**
+     * rests the singleton at the end of the run
+     */
     public static void disposeClass(){
         classScope = null;
     }

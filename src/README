@@ -1,5 +1,5 @@
 zivbeker
-roigarnett???
+roigarnett
 
 =============================
 =      File description     =
@@ -7,9 +7,9 @@ roigarnett???
 
 oop.ex6.main package:
 ScopeFactory - A factory class that creates scopes and add the the lines of each scope to it's respectable
-class.
-Sjavac - The "main" class of the program. extracts data, removes lines which are not interesting (comments and
-empty lines) and runs the whole program.
+               class.
+Sjavac - The "main" class of the program. extracts data, removes lines which are not interesting (comments
+         and empty lines) and runs the whole program.
 
 Parsing package:
 BasicParsing - A class that responsible for simple checking and parsing of line parts.
@@ -18,10 +18,10 @@ CheckScopes - A service class used for managing each scope checking independentl
 
 Structure package:
 ClassScope - The singleton scope of the global variables and the file itself. In addition to extending scope -
-has a list of all the method declarations inside the scope.
+             has a list of all the method declarations inside the scope.
 Line - A class representing a line which holds the content of a line and a scope if this defines a one.
 MethodDeclaration - A class representing a method declaration. Used mainly to check if a method call is
-correct.
+                    correct.
 MethodScope - A class representing a method scope which has certain variables and lines. It is different from
 Scope class because we would want to change and create variables inside the method and not change them/create
 them in the class scope.

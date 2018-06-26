@@ -15,9 +15,8 @@ public class GeneralLineCheck {
 
     /**
      * checks the correctness of a line and if correct updates all the variables of the scope.
-     * @param line
-     * @return
-     * @throws Exception
+     * @param line a string representing the line
+     * @throws Exception if there is somthing wrong with the line
      */
     static void checkRegularLine(String line, Scope scope) throws Exception{
         boolean isFinal;
@@ -114,13 +113,14 @@ public class GeneralLineCheck {
     }
 
     /**
-     *
-     * @param isFinal
-     * @param lineType
-     * @param name
-     * @param placementType
-     * @param scope
-     * @throws Exception
+     * gets a type of variable and a type of a placement and checks if the placemnt is possible. If so,
+     * adds the variable to the scope
+     * @param isFinal whether the variable is declared final
+     * @param lineType the type of the declaration
+     * @param name the name of the variable
+     * @param placementType the type of the placement
+     * @param scope the current scope
+     * @throws Exception if the placement isn't possible
      */
     private static void checkPlacementsTypes(boolean isFinal, VariableTypes lineType, String
             name, VariableTypes placementType, Scope scope)  throws Exception {
